@@ -150,14 +150,124 @@ export default function InterpretabilityPage() {
         </Card>
       </div>
 
-      <Tabs defaultValue="metrics" className="w-full">
-        <TabsList>
+      <Tabs defaultValue="animations" className="w-full">
+        <TabsList className="flex-wrap">
+          <TabsTrigger value="animations">Animations</TabsTrigger>
           <TabsTrigger value="metrics">Attention Metrics</TabsTrigger>
+          <TabsTrigger value="single-trial">Single-Trial Analysis</TabsTrigger>
           <TabsTrigger value="heatmaps">Heatmaps</TabsTrigger>
           <TabsTrigger value="predictions">Predictions</TabsTrigger>
           <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
           <TabsTrigger value="markers">Marker Setup</TabsTrigger>
         </TabsList>
+
+        {/* ── ANIMATIONS ───────────────────────────────────────────── */}
+        <TabsContent value="animations" className="space-y-6">
+          <p className="text-sm text-zinc-400 max-w-2xl">
+            Animated visualisations of the ICF attention mechanism on its best-performing trials.
+            Each animation type reveals a different facet of what the model has learned — from
+            head-by-head competition to the sequential buildup of attention weight.
+          </p>
+
+          {/* Animation type legend */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {[
+              { type: "Head Race", key: "head_race", desc: "All 16 attention heads rendered simultaneously. Watch which heads activate first and which dominate during biomechanically critical phases (heel-strike, toe-off, peak loading)." },
+              { type: "Buildup", key: "buildup",   desc: "Cumulative attention weight building over the trial sequence. Reveals how much of the trial the model has 'decided' to focus on by each timestep." },
+              { type: "Sweep",    key: "sweep",     desc: "A sliding window sweep across the sequence showing attention weight density at each position. Highlights the model's preferred temporal receptive field." },
+            ].map((a) => (
+              <Card key={a.key} className="border-t-2 border-t-violet-700">
+                <CardContent className="pt-4">
+                  <p className="text-sm font-semibold text-violet-300 mb-1">{a.type}</p>
+                  <p className="text-xs text-zinc-500">{a.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* GL LOSO — best trial R²=0.967 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>GroundLink LOSO — Best Trial (R² = 0.967, Subject GL7)</CardTitle>
+              <CardDescription>
+                Single-trial attention animations from the held-out GL7 fold. This trial achieves
+                near-perfect prediction, letting us see exactly what a well-converged ICF attends to.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {[
+                  { src: "/outputs/animations/gl_head_race.gif", label: "Head Race" },
+                  { src: "/outputs/animations/gl_buildup.gif",   label: "Buildup" },
+                  { src: "/outputs/animations/gl_sweep.gif",     label: "Sweep" },
+                ].map((a) => (
+                  <div key={a.src} className="space-y-1">
+                    <p className="text-xs font-semibold text-zinc-400">{a.label}</p>
+                    <ChartLightbox title={`GL Best Trial — ${a.label}`}>
+                      <Image src={a.src} alt={`GL ${a.label}`} width={600} height={400} className="w-full rounded border border-zinc-800" unoptimized />
+                    </ChartLightbox>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* PH LOSO — best trial R²=0.891 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Patient Handling LOSO — Best Trial (R² = 0.891, Subject PH1)</CardTitle>
+              <CardDescription>
+                Attention animations for the best PH trial. Occupational patient-handling tasks have
+                longer, aperiodic movement sequences — notice how the attention patterns differ from the
+                stereotyped locomotion above.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {[
+                  { src: "/outputs/animations/ph_head_race.gif", label: "Head Race" },
+                  { src: "/outputs/animations/ph_buildup.gif",   label: "Buildup" },
+                  { src: "/outputs/animations/ph_sweep.gif",     label: "Sweep" },
+                ].map((a) => (
+                  <div key={a.src} className="space-y-1">
+                    <p className="text-xs font-semibold text-zinc-400">{a.label}</p>
+                    <ChartLightbox title={`PH Best Trial — ${a.label}`}>
+                      <Image src={a.src} alt={`PH ${a.label}`} width={600} height={400} className="w-full rounded border border-zinc-800" unoptimized />
+                    </ChartLightbox>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Combined CV — best trial R²=0.906 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Combined CV — Best Trial (R² = 0.906, Fold 2)</CardTitle>
+              <CardDescription>
+                Animations from the combined dual-holdout experiment (ICF trained on both GL + PH).
+                The model sees two coordinate frames during training; this trial shows how attention
+                adapts when the model must generalise across both labs.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {[
+                  { src: "/outputs/animations/combined_head_race.gif", label: "Head Race" },
+                  { src: "/outputs/animations/combined_buildup.gif",   label: "Buildup" },
+                  { src: "/outputs/animations/combined_sweep.gif",     label: "Sweep" },
+                ].map((a) => (
+                  <div key={a.src} className="space-y-1">
+                    <p className="text-xs font-semibold text-zinc-400">{a.label}</p>
+                    <ChartLightbox title={`Combined Best Trial — ${a.label}`}>
+                      <Image src={a.src} alt={`Combined ${a.label}`} width={600} height={400} className="w-full rounded border border-zinc-800" unoptimized />
+                    </ChartLightbox>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* ── METRICS ──────────────────────────────────────────────── */}
         <TabsContent value="metrics" className="space-y-6">
@@ -186,8 +296,8 @@ export default function InterpretabilityPage() {
           {/* Layer specialisation note */}
           <Card>
             <CardContent className="pt-4 pb-4">
-              <div className="flex gap-6 text-xs">
-                <div className="flex-1 border-r border-zinc-800 pr-6">
+              <div className="flex flex-col gap-4 text-xs sm:flex-row sm:gap-6">
+                <div className="flex-1 sm:border-r sm:border-zinc-800 sm:pr-6">
                   <p className="font-semibold text-zinc-200 mb-1">Layer 1 — Local Feature Extraction</p>
                   <p className="text-zinc-500">Attends to nearby timesteps (short temporal windows). Captures local dynamics: heel-strike transients, acceleration, deceleration. Functions similarly to the Conv1D embedding&apos;s temporal receptive field. More dense attention pattern.</p>
                 </div>
@@ -270,6 +380,7 @@ export default function InterpretabilityPage() {
               <CardTitle>Full Attention Metrics Table</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -316,6 +427,7 @@ export default function InterpretabilityPage() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
 
@@ -372,6 +484,134 @@ export default function InterpretabilityPage() {
                   className="w-full rounded"
                   unoptimized
                 />
+              </ChartLightbox>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ── SINGLE-TRIAL ANALYSIS ─────────────────────────────────── */}
+        <TabsContent value="single-trial" className="space-y-6">
+          <p className="text-sm text-zinc-400 max-w-2xl">
+            Deep-dive into a single GL7 held-out trial (R²&nbsp;=&nbsp;0.967) — the best-performing
+            trial across all experiments. These plots characterise how the ICF&apos;s 16 attention heads
+            behave at the level of an individual prediction.
+          </p>
+
+          {/* Synced attention + GRF */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Synced Attention + GRF Signal (Best Trial, R² = 0.967)</CardTitle>
+              <CardDescription>
+                Attention weights overlaid directly on the predicted and ground-truth GRF time series.
+                Bright regions show where the model concentrates attention for each force channel.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartLightbox title="Synced Attention + GRF — GL7 Best Trial">
+                <Image src="/outputs/gl_attn/synced_best.png" alt="Synced attention best trial" width={1200} height={600} className="w-full rounded" unoptimized />
+              </ChartLightbox>
+            </CardContent>
+          </Card>
+
+          {/* Per-head grids */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Per-Head Attention — Best Trial (R² = 0.967)</CardTitle>
+                <CardDescription>
+                  Individual attention maps for all 16 heads. Each panel shows one head&apos;s
+                  (query → key) attention matrix over the full trial sequence.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Per-Head Attention — GL7 Best Trial">
+                  <Image src="/outputs/gl_attn/per_head_best.png" alt="Per-head attention best" width={900} height={700} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Per-Head Attention — Second Trial (R² = 0.909)</CardTitle>
+                <CardDescription>
+                  Cross-trial comparison: same subject, different trial. Consistent head
+                  specialisation across trials confirms the patterns are structural, not random.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Per-Head Attention — GL7 Second Trial">
+                  <Image src="/outputs/gl_attn/per_head_second.png" alt="Per-head attention second" width={900} height={700} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Layer evolution + query profile */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Layer Evolution (Best Trial)</CardTitle>
+                <CardDescription>
+                  How attention patterns transform from Layer 1 → Layer 2. Layer 1 aggregates
+                  local features; Layer 2 distills them into sparse, long-range dependencies.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Layer Evolution — GL7 Best Trial">
+                  <Image src="/outputs/gl_attn/layer_evolution_best.png" alt="Layer evolution" width={900} height={600} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Query Profile (Best Trial)</CardTitle>
+                <CardDescription>
+                  Each query timestep&apos;s attention distribution across the full key sequence.
+                  Diagonal bands indicate local tracking; off-diagonal spikes indicate long-range
+                  reference points.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Query Profile — GL7 Best Trial">
+                  <Image src="/outputs/gl_attn/query_profile_best.png" alt="Query profile" width={900} height={600} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Population-level attention stats */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { src: "/outputs/gl_attn/anchor_density.png",    title: "Anchor Density",       desc: "Spatial density of high-attention anchors across the trial timeline." },
+              { src: "/outputs/gl_attn/head_specialization.png", title: "Head Specialisation", desc: "Cluster assignments for all 16 heads — Local, Feature, Contextualiser." },
+              { src: "/outputs/gl_attn/phase_attention.png",   title: "Phase Attention",      desc: "Attention weight concentration aligned to gait phase (stance / swing)." },
+              { src: "/outputs/gl_attn/temporal_profiles.png", title: "Temporal Profiles",    desc: "Mean attention weight vs. temporal displacement per head and layer." },
+            ].map((p) => (
+              <Card key={p.src}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">{p.title}</CardTitle>
+                  <CardDescription className="text-xs">{p.desc}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartLightbox title={p.title}>
+                    <Image src={p.src} alt={p.title} width={600} height={450} className="w-full rounded border border-zinc-800" unoptimized />
+                  </ChartLightbox>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Feature correlation */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Head–Feature Correlation</CardTitle>
+              <CardDescription>
+                Correlation between each attention head&apos;s activation pattern and each of the 10 GRF
+                output channels. Reveals which heads are most responsible for predicting each force component.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartLightbox title="Head–Feature Correlation">
+                <Image src="/outputs/gl_attn/feature_correlation.png" alt="Head feature correlation" width={1000} height={500} className="w-full rounded" unoptimized />
               </ChartLightbox>
             </CardContent>
           </Card>

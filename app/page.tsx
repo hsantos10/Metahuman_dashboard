@@ -73,23 +73,24 @@ const featureRadar = [
   { feature: "AP₂",    icf: 0.311, cnnLstm: 0.192, cnn: 0.165 },
 ];
 
+/* R² values from paper Table 3. */
 const combinedFolds = [
-  { fold: "F1", gl: "GL2", ph: "PH1",  glR2: 0.569, phR2: 0.687, combined: 0.625 },
-  { fold: "F2", gl: "GL3", ph: "PH11", glR2: 0.535, phR2: 0.609, combined: 0.569 },
-  { fold: "F3", gl: "GL4", ph: "PH12", glR2: 0.510, phR2: 0.610, combined: 0.562 },
-  { fold: "F4", gl: "GL5", ph: "PH2",  glR2: 0.531, phR2: 0.633, combined: 0.577 },
-  { fold: "F5", gl: "GL6", ph: "PH3",  glR2: 0.621, phR2: 0.633, combined: 0.626 },
-  { fold: "F6", gl: "GL7", ph: "PH4",  glR2: 0.654, phR2: 0.773, combined: 0.730 },
+  { fold: "F1", gl: "GL2", ph: "PH1", glR2: 0.555, phR2: 0.649, combined: 0.600 },
+  { fold: "F2", gl: "GL3", ph: "PH2", glR2: 0.609, phR2: 0.597, combined: 0.604 },
+  { fold: "F3", gl: "GL4", ph: "PH3", glR2: 0.538, phR2: 0.600, combined: 0.571 },
+  { fold: "F4", gl: "GL5", ph: "PH4", glR2: 0.506, phR2: 0.704, combined: 0.602 },
+  { fold: "F5", gl: "GL6", ph: "PH5", glR2: 0.598, phR2: 0.573, combined: 0.589 },
+  { fold: "F6", gl: "GL7", ph: "PH6", glR2: 0.601, phR2: 0.537, combined: 0.560 },
 ];
 
 const allResults = [
   { experiment: "GL LOSO", model: "ICF", r2: 0.655, mae: 0.328, folds: 6, status: "best" },
   { experiment: "GL LOSO", model: "CNN-LSTM", r2: 0.619, mae: 0.351, folds: 6, status: "ok" },
   { experiment: "GL LOSO", model: "CNN", r2: 0.530, mae: 0.405, folds: 6, status: "ok" },
-  { experiment: "PH LOSO", model: "ICF",      r2: 0.561, mae: 0.400, folds: 10, status: "best" },
-  { experiment: "PH LOSO", model: "CNN-LSTM", r2: 0.606, mae: 0.374, folds: 10, status: "ok"   },
-  { experiment: "PH LOSO", model: "CNN",       r2: 0.555, mae: 0.413, folds: 10, status: "ok"   },
-  { experiment: "Combined CV", model: "ICF", r2: 0.615, mae: null, folds: 6, status: "best" },
+  { experiment: "PH LOSO", model: "CNN-LSTM", r2: 0.606, mae: 0.374, folds: 10, status: "best" },
+  { experiment: "PH LOSO", model: "ICF",      r2: 0.561, mae: 0.400, folds: 10, status: "ok"   },
+  { experiment: "PH LOSO", model: "CNN",      r2: 0.555, mae: 0.413, folds: 10, status: "ok"   },
+  { experiment: "Combined CV", model: "ICF", r2: 0.587, mae: null, folds: 6, status: "best" },
 ];
 
 const hpoParams = {
@@ -198,7 +199,7 @@ export default function OverviewPage() {
       {/* ══ HERO STATS ══ */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard value="0.655" label="GL LOSO R²" sub="Best model · 6 subjects held out" icon={TrendingUp} accent />
-        <StatCard value="0.615" label="Combined CV R²" sub="6-fold dual-holdout · 2 labs" icon={FlaskConical} />
+        <StatCard value="0.587" label="Combined CV R²" sub="6-fold dual-holdout · 2 labs" icon={FlaskConical} />
         <StatCard value="16" label="Total Subjects" sub="6 GroundLink + 10 Patient Handling" icon={Users} />
         <StatCard value="10" label="GRF Channels" sub="3D force + CoP · bilateral" icon={Activity} />
       </div>
@@ -257,7 +258,7 @@ export default function OverviewPage() {
             <div className="rounded-md bg-emerald-950/30 border border-emerald-900/30 p-3 mt-2">
               <p className="text-[11px] text-emerald-300/80">
                 <span className="font-semibold">Result:</span> Combined training achieves
-                <span className="font-mono font-semibold"> R² = 0.615</span> on held-out subjects from both labs,
+                <span className="font-mono font-semibold"> R² = 0.587</span> on held-out subjects from both labs,
                 transforming catastrophic cross-lab failure into reliable generalisation.
               </p>
             </div>
@@ -739,7 +740,7 @@ export default function OverviewPage() {
             </table>
           </div>
           <div className="mt-3 rounded-md bg-zinc-900/50 border border-zinc-800/50 p-2.5 text-[11px] text-zinc-600">
-            <span className="text-zinc-500">Note:</span> Cross-lab transfer (GL→PH or PH→GL) yields R² &lt; −1.0 for all models — available in Benchmarks.
+            <span className="text-zinc-500">Note:</span> Cross-lab transfer (GL→PH or PH→GL) yields R² &lt; 0 (ranging from −0.45 to −1.49) for all models — available in Benchmarks.
           </div>
         </CardContent>
       </Card>

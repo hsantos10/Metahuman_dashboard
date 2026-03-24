@@ -17,6 +17,8 @@ import {
   Legend,
 } from "recharts";
 import { AlertTriangle, Info, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import ChartLightbox from "@/components/chart-lightbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -89,13 +91,14 @@ const phLosoICF = [
 ];
 
 /* ── Combined Dual-Holdout CV (ICF) ── */
+/* R² values from paper Table 3. MAE approximated from single-dataset LOSO per-subject values. */
 const combinedFolds = [
-  { fold: 1, gl: "GL2", ph: "PH1", nTrain: 575, glR2: 0.569, glMae: 0.302, phR2: 0.687, phMae: 0.348, combined: 0.625 },
-  { fold: 2, gl: "GL3", ph: "PH11", nTrain: 572, glR2: 0.535, glMae: 0.284, phR2: 0.609, phMae: 0.364, combined: 0.569 },
-  { fold: 3, gl: "GL4", ph: "PH12", nTrain: 585, glR2: 0.510, glMae: 0.328, phR2: 0.610, phMae: 0.409, combined: 0.562 },
-  { fold: 4, gl: "GL5", ph: "PH2", nTrain: 583, glR2: 0.531, glMae: 0.436, phR2: 0.633, phMae: 0.407, combined: 0.577 },
-  { fold: 5, gl: "GL6", ph: "PH3", nTrain: 569, glR2: 0.621, glMae: 0.255, phR2: 0.633, phMae: 0.435, combined: 0.626 },
-  { fold: 6, gl: "GL7", ph: "PH4", nTrain: 600, glR2: 0.654, glMae: 0.259, phR2: 0.773, phMae: 0.284, combined: 0.730 },
+  { fold: 1, gl: "GL2", ph: "PH1", nTrain: 575, glR2: 0.555, glMae: 0.302, phR2: 0.649, phMae: 0.328, combined: 0.600 },
+  { fold: 2, gl: "GL3", ph: "PH2", nTrain: 572, glR2: 0.609, glMae: 0.235, phR2: 0.597, phMae: 0.381, combined: 0.604 },
+  { fold: 3, gl: "GL4", ph: "PH3", nTrain: 585, glR2: 0.538, glMae: 0.328, phR2: 0.600, phMae: 0.434, combined: 0.571 },
+  { fold: 4, gl: "GL5", ph: "PH4", nTrain: 583, glR2: 0.506, glMae: 0.606, phR2: 0.704, phMae: 0.326, combined: 0.602 },
+  { fold: 5, gl: "GL6", ph: "PH5", nTrain: 569, glR2: 0.598, glMae: 0.270, phR2: 0.573, phMae: 0.426, combined: 0.589 },
+  { fold: 6, gl: "GL7", ph: "PH6", nTrain: 600, glR2: 0.601, glMae: 0.225, phR2: 0.537, phMae: 0.287, combined: 0.560 },
 ];
 
 /* ── Per-Feature Breakdown (GL LOSO means) ── */
@@ -126,14 +129,14 @@ const featureRadarData = [
   { feature: "AP₂",    icf: 0.311, cnnLstm: 0.192, cnn: 0.165 },
 ];
 
-/* ── Cross-Lab Summary (table only per user request) ── */
+/* ── Cross-Lab Summary (from paper Table 4) ── */
 const crossLabSummary = [
-  { source: "GL→PH (ICF)", meanR2: -0.402, note: "Best among models, still negative" },
+  { source: "GL→PH (ICF)", meanR2: -0.447, note: "Best among models, still negative" },
   { source: "GL→PH (CNN-LSTM)", meanR2: -0.782, note: "Large domain gap" },
   { source: "GL→PH (CNN)", meanR2: -0.721, note: "Large domain gap" },
   { source: "PH→GL (ICF)", meanR2: -1.397, note: "Asymmetric transfer — PH→GL harder" },
-  { source: "PH→GL (CNN-LSTM)", meanR2: -0.798, note: "All models fail cross-lab" },
-  { source: "PH→GL (CNN)", meanR2: -0.754, note: "All models fail cross-lab" },
+  { source: "PH→GL (CNN-LSTM)", meanR2: -1.490, note: "All models fail cross-lab" },
+  { source: "PH→GL (CNN)", meanR2: -1.100, note: "All models fail cross-lab" },
 ];
 
 /* ─────────────────────────────────────────────
@@ -379,6 +382,19 @@ export default function BenchmarksPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Published paper figure */}
+          <Card className="border-t-2 border-t-violet-700/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-violet-300">Published Figure — Model Comparison R²</CardTitle>
+              <CardDescription className="text-xs">Paper Fig. 1. Architecture ranking reverses between datasets: ICF leads on GL, CNN-LSTM leads on PH.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartLightbox title="Fig. 1 — Model Comparison R²">
+                <Image src="/outputs/paper_figures/fig1_model_comparison_r2.png" alt="Fig 1 model comparison R2" width={1200} height={500} className="w-full rounded" unoptimized />
+              </ChartLightbox>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* ═══ GL LOSO (ICF) ═══ */}
@@ -466,6 +482,59 @@ export default function BenchmarksPage() {
               </Table>
             </CardContent>
           </Card>
+
+          {/* LOSO diagnostic plots */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { src: "/outputs/loso_ph/loso_per_fold_r2.png",        title: "Per-Fold R²",          desc: "ICF R² for each GL LOSO fold — shows subject-level variability." },
+              { src: "/outputs/loso_ph/loso_per_fold_mae.png",       title: "Per-Fold MAE",         desc: "Mean absolute error across GL LOSO folds." },
+              { src: "/outputs/loso_ph/loso_gl_feature_heatmap.png", title: "GL Feature Heatmap",   desc: "Per-channel R² heatmap across all GL LOSO folds and output features." },
+            ].map((p) => (
+              <Card key={p.src}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">{p.title}</CardTitle>
+                  <CardDescription className="text-xs">{p.desc}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartLightbox title={p.title}>
+                    <Image src={p.src} alt={p.title} width={800} height={500} className="w-full rounded border border-zinc-800" unoptimized />
+                  </ChartLightbox>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* GL LOSO model comparison + post-analysis */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">GL LOSO — Model Comparison Plots</CardTitle>
+              <CardDescription className="text-xs">Side-by-side R² and MAE comparison of all three architectures on the GL LOSO protocol.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartLightbox title="GL LOSO — Model Comparison">
+                <Image src="/outputs/gl_loso/model_comparison_plots.png" alt="GL LOSO model comparison" width={1200} height={600} className="w-full rounded" unoptimized />
+              </ChartLightbox>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {[
+              { src: "/outputs/gl_loso/post_analysis/performance_comparison.png",                            title: "Post-Analysis — Performance Comparison",   desc: "Detailed performance breakdown comparing models on the GL LOSO held-out subjects." },
+              { src: "/outputs/gl_loso/post_analysis/prediction_quality_ImprovedConvFormer_sample_0.png",    title: "Post-Analysis — Prediction Quality Sample", desc: "ICF predicted vs ground-truth GRF traces for a representative GL LOSO sample." },
+            ].map((p) => (
+              <Card key={p.src}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">{p.title}</CardTitle>
+                  <CardDescription className="text-xs">{p.desc}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartLightbox title={p.title}>
+                    <Image src={p.src} alt={p.title} width={900} height={500} className="w-full rounded border border-zinc-800" unoptimized />
+                  </ChartLightbox>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
 
         {/* ═══ PH LOSO (ICF) ═══ */}
@@ -566,6 +635,19 @@ export default function BenchmarksPage() {
               </div>
             </CardHeader>
           </Card>
+
+          {/* PH feature heatmap */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">PH Feature Heatmap</CardTitle>
+              <CardDescription className="text-xs">Per-channel R² heatmap across all PH LOSO folds and output features.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartLightbox title="PH Feature Heatmap">
+                <Image src="/outputs/loso_ph/loso_ph_feature_heatmap.png" alt="PH Feature Heatmap" width={1000} height={500} className="w-full rounded" unoptimized />
+              </ChartLightbox>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* ═══ COMBINED CV ═══ */}
@@ -625,6 +707,7 @@ export default function BenchmarksPage() {
               <CardTitle className="text-base">Per-Fold Detail</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-zinc-800">
@@ -671,6 +754,20 @@ export default function BenchmarksPage() {
                   </TableRow>
                 </TableBody>
               </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Published paper figure */}
+          <Card className="border-t-2 border-t-violet-700/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-violet-300">Published Figure — Fold Variability</CardTitle>
+              <CardDescription className="text-xs">Paper Fig. 4. Per-subject R² across GL (top) and PH (bottom) LOSO folds, showing inter-subject variability for all models.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartLightbox title="Fig. 4 — Fold Variability">
+                <Image src="/outputs/paper_figures/fig4_fold_variability.png" alt="Fig 4 fold variability" width={1200} height={600} className="w-full rounded" unoptimized />
+              </ChartLightbox>
             </CardContent>
           </Card>
         </TabsContent>
@@ -707,6 +804,7 @@ export default function BenchmarksPage() {
               <CardTitle className="text-base">Feature R² Table — GL LOSO Mean</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-zinc-800">
@@ -734,8 +832,83 @@ export default function BenchmarksPage() {
                   })}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
+
+          {/* Published paper figures */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <Card className="border-t-2 border-t-violet-700/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-violet-300">Published Figure — Feature Breakdown GL</CardTitle>
+                <CardDescription className="text-xs">Paper Fig. 2. Per-channel R² for each model on GroundLink LOSO. ICF leads on 9 of 10 channels.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Fig. 2 — Feature Breakdown GL">
+                  <Image src="/outputs/paper_figures/fig2_feature_breakdown_gl.png" alt="Fig 2 feature breakdown GL" width={900} height={500} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+            <Card className="border-t-2 border-t-violet-700/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-violet-300">Published Figure — Feature Breakdown PH</CardTitle>
+                <CardDescription className="text-xs">Paper Fig. 3. Per-channel R² for each model on Patient Handling LOSO. CNN-LSTM and ICF trade leads.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Fig. 3 — Feature Breakdown PH">
+                  <Image src="/outputs/paper_figures/fig3_feature_breakdown_ph.png" alt="Fig 3 feature breakdown PH" width={900} height={500} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <Card className="border-t-2 border-t-violet-700/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-violet-300">Published Figure — Feature Difficulty Ranking</CardTitle>
+                <CardDescription className="text-xs">Paper Fig. 7. Tier 1 (Vert, CoP-x) → Tier 2 (ML, CoP-z) → Tier 3 (AP) difficulty hierarchy.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Fig. 7 — Feature Difficulty">
+                  <Image src="/outputs/paper_figures/fig7_feature_difficulty.png" alt="Fig 7 feature difficulty" width={900} height={500} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+            <Card className="border-t-2 border-t-violet-700/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-violet-300">Published Radar — GL vs PH Feature Space</CardTitle>
+                <CardDescription className="text-xs">Paper Figs. 5–6. Radar charts comparing per-channel R² across all three architectures for GL (left) and PH (right).</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-2">
+                <ChartLightbox title="Fig. 5 — Radar GL">
+                  <Image src="/outputs/paper_figures/fig5_radar_gl.png" alt="Fig 5 radar GL" width={600} height={600} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+                <ChartLightbox title="Fig. 6 — Radar PH">
+                  <Image src="/outputs/paper_figures/fig6_radar_ph.png" alt="Fig 6 radar PH" width={600} height={600} className="w-full rounded" unoptimized />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* LOSO feature diagnostic plots */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {[
+              { src: "/outputs/loso_ph/loso_feature_r2_errorbar.png", title: "Feature R² Error Bars",  desc: "Mean ± std R² per output channel across all LOSO folds — error bars show fold-to-fold variability." },
+              { src: "/outputs/loso_ph/loso_mean_feature_r2.png",     title: "Mean Feature R²",        desc: "Ranked mean R² per feature across GL and PH LOSO experiments for the ICF model." },
+            ].map((p) => (
+              <Card key={p.src}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">{p.title}</CardTitle>
+                  <CardDescription className="text-xs">{p.desc}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartLightbox title={p.title}>
+                    <Image src={p.src} alt={p.title} width={900} height={500} className="w-full rounded border border-zinc-800" unoptimized />
+                  </ChartLightbox>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
 
         {/* ═══ CROSS-LAB ═══ */}
@@ -798,6 +971,39 @@ export default function BenchmarksPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Published paper figure */}
+          <Card className="border-t-2 border-t-violet-700/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-violet-300">Published Figure — Domain Gap Heatmap</CardTitle>
+              <CardDescription className="text-xs">Paper Fig. 8. Per-channel R² under cross-lab transfer. Vertical force retains weakly positive R² under GL→PH; AP force and CoP are universally negative.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartLightbox title="Fig. 8 — Domain Gap Heatmap">
+                <Image src="/outputs/paper_figures/fig8_domain_gap.png" alt="Fig 8 domain gap heatmap" width={1000} height={500} className="w-full rounded" unoptimized />
+              </ChartLightbox>
+            </CardContent>
+          </Card>
+
+          {/* Additional domain-gap diagnostics */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {[
+              { src: "/outputs/loso_ph/loso_domain_gap_heatmap.png",      title: "Domain Gap Heatmap (LOSO)",          desc: "Per-channel R² when the ICF model trained on one dataset is evaluated on the other — all channels fail." },
+              { src: "/outputs/loso_ph/loso_scatter_primary_vs_xlab.png", title: "Primary vs Cross-Lab Scatter",        desc: "Scatter of within-lab LOSO R² (x-axis) vs cross-lab R² (y-axis) for each subject/channel pairing." },
+            ].map((p) => (
+              <Card key={p.src}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">{p.title}</CardTitle>
+                  <CardDescription className="text-xs">{p.desc}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartLightbox title={p.title}>
+                    <Image src={p.src} alt={p.title} width={900} height={500} className="w-full rounded border border-zinc-800" unoptimized />
+                  </ChartLightbox>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
