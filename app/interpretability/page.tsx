@@ -166,7 +166,10 @@ export default function InterpretabilityPage() {
           <p className="text-sm text-zinc-400 max-w-2xl">
             Animated visualisations of the ICF attention mechanism on its best-performing trials.
             Each animation type reveals a different facet of what the model has learned — from
-            head-by-head competition to the sequential buildup of attention weight.
+            head-by-head competition to the sequential buildup of attention weight. Watching the
+            animations makes it easy to see that attention concentrates on biomechanically
+            meaningful moments (heel-strike, toe-off, peak loading) rather than spreading evenly
+            across the sequence, confirming the model has learned real movement structure.
           </p>
 
           {/* Animation type legend */}
@@ -271,6 +274,14 @@ export default function InterpretabilityPage() {
 
         {/* ── METRICS ──────────────────────────────────────────────── */}
         <TabsContent value="metrics" className="space-y-6">
+          <p className="text-sm text-zinc-400 max-w-2xl">
+            Quantitative measurements of how the ICF&apos;s 16 attention heads allocate focus across
+            the time series, aggregated over all 6 cross-validation folds. Metrics like sparsity
+            (~97.5%) confirm the model concentrates on a tiny fraction of timesteps, while the ROI
+            hit rate tests whether those timesteps land in biomechanically important regions. Consistent
+            results across folds indicate the patterns are genuine learned structure, not fold-specific
+            noise.
+          </p>
 
           {/* Head cluster summary */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -494,7 +505,10 @@ export default function InterpretabilityPage() {
           <p className="text-sm text-zinc-400 max-w-2xl">
             Deep-dive into a single GL7 held-out trial (R²&nbsp;=&nbsp;0.967) — the best-performing
             trial across all experiments. These plots characterise how the ICF&apos;s 16 attention heads
-            behave at the level of an individual prediction.
+            behave at the level of an individual prediction. Examining the exact timesteps each head
+            attends to, and correlating them with the force output, reveals the internal mechanism
+            behind the model&apos;s accuracy and shows that high performance is driven by interpretable
+            attention, not a black-box shortcut.
           </p>
 
           {/* Synced attention + GRF */}
@@ -619,6 +633,14 @@ export default function InterpretabilityPage() {
 
         {/* ── HEATMAPS ─────────────────────────────────────────────── */}
         <TabsContent value="heatmaps" className="space-y-6">
+          <p className="text-sm text-zinc-400 max-w-2xl">
+            2D attention maps showing which timesteps each attention head focuses on, rendered as
+            colour-coded grids overlaid on the GRF signal. Bright patches mean high attention weight;
+            their position reveals whether a head tracks nearby context (near-diagonal bands) or
+            references distant parts of the sequence (off-diagonal spikes). Comparing heatmaps across
+            folds and task types shows how consistently each head specialises its role across different
+            subjects and movement patterns.
+          </p>
           <Card>
             <CardHeader>
               <CardTitle>Head Specialisation — Combined (All Folds)</CardTitle>
@@ -743,6 +765,14 @@ export default function InterpretabilityPage() {
 
         {/* ── PREDICTIONS ──────────────────────────────────────────── */}
         <TabsContent value="predictions" className="space-y-6">
+          <p className="text-sm text-zinc-400 max-w-2xl">
+            Time-series overlays of the ICF&apos;s predicted ground reaction forces against the
+            force-plate ground truth for each held-out subject and fold. Close alignment across all
+            10 GRF channels demonstrates that the model generalises to unseen individuals — the
+            primary goal of leave-one-subject-out evaluation. Residuals and divergences highlight
+            which force components (typically anteroposterior) are hardest to predict from motion
+            capture alone, pointing to where future model improvements are most needed.
+          </p>
           <Card>
             <CardHeader>
               <CardTitle>Predicted vs Ground Truth — All Folds</CardTitle>
@@ -788,10 +818,13 @@ export default function InterpretabilityPage() {
 
         {/* ── DIAGNOSTICS ──────────────────────────────────────────── */}
         <TabsContent value="diagnostics" className="space-y-6">
-          <p className="text-sm text-zinc-400">
-            Diagnostic plots from the combined experiment investigating scale
-            imbalance, coordinate alignment, task-conditioned training, and raw
-            attention structure.
+          <p className="text-sm text-zinc-400 max-w-2xl">
+            Diagnostic plots from the combined experiment investigating scale imbalance, coordinate
+            alignment, task-conditioned training, and raw attention structure. These visuals document
+            key engineering decisions made during training — normalisation choices, force-axis
+            sign-flip corrections, and task-label injection — and their measurable impact on
+            attention quality and prediction accuracy. Understanding these trade-offs is important
+            for anyone seeking to reproduce or extend these results.
           </p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {[
@@ -850,6 +883,14 @@ export default function InterpretabilityPage() {
 
         {/* ── MARKERS ──────────────────────────────────────────────── */}
         <TabsContent value="markers" className="space-y-6">
+          <p className="text-sm text-zinc-400 max-w-2xl">
+            The canonical 20-marker body model that both the GroundLink and Patient Handling
+            datasets are standardised to before feature engineering. Each marker contributes
+            position, velocity, and acceleration signals plus inter-marker distances, totalling
+            ~170 input features per timestep. This shared representation is what allows the model
+            to train across two different labs simultaneously and still generalise across coordinate
+            systems and task types.
+          </p>
           <Card>
             <CardHeader>
               <CardTitle>20-Marker Body Model</CardTitle>
