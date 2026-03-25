@@ -173,7 +173,8 @@ export default function OverviewPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="rounded px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-widest bg-[color:var(--tamu-muted)] text-[color:var(--tamu)]">
-            Texas A&amp;M · Biomechanics
+            {/* ANON: was "Texas A&amp;M · Biomechanics" — restore after acceptance */}
+            Biomechanics Lab
           </span>
           <Badge variant="outline" className="text-[9px] font-mono tracking-widest border-zinc-800 text-zinc-600">
             ImprovedConvFormer v1.0
@@ -767,7 +768,8 @@ export default function OverviewPage() {
             <CardTitle className="text-sm text-[color:var(--tamu)]">Patient Handling (PH)</CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-zinc-400 space-y-1.5">
-            <p><span className="text-zinc-600">Source</span>{" — "}Chen et al., 2025 · Texas A&amp;M</p>
+            {/* ANON: was "Chen et al., 2025 · Texas A&amp;M" — restore after acceptance */}
+            <p><span className="text-zinc-600">Source</span>{" — "}Occupational dataset · 2025</p>
             <p><span className="text-zinc-600">Format</span>{" — "}TRC marker + MOT force (OpenSim)</p>
             <p><span className="text-zinc-600">Subjects</span>{" — "}10 of 14</p>
             <p><span className="text-zinc-600">Trials</span>{" — "}460 processed</p>

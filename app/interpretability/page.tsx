@@ -85,7 +85,8 @@ export default function InterpretabilityPage() {
     <div className="space-y-6">
       <div className="space-y-2">
         <span className="rounded px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-widest bg-[color:var(--tamu-muted)] text-[color:var(--tamu)]">
-          Texas A&M · Biomechanics
+          {/* ANON: was "Texas A&M · Biomechanics" — restore after acceptance */}
+          Biomechanics Lab
         </span>
         <div className="flex items-center gap-3">
           <Brain className="h-7 w-7 text-zinc-500" />

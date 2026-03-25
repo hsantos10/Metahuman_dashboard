@@ -167,7 +167,8 @@ export default function Sidebar() {
             <div className="h-full w-[66%] rounded-full bg-[color:var(--tamu)]" />
           </div>
           <p className="mt-3 text-[9px] font-mono text-zinc-700">
-            Texas A&amp;M · v1.0
+            {/* ANON: was "Texas A&amp;M · v1.0" — restore after acceptance */}
+            v1.0
           </p>
         </div>
       </aside>

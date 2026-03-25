@@ -36,7 +36,8 @@ export default function ReconstructorPage() {
       {/* Header */}
       <div className="space-y-2">
         <span className="rounded px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-widest bg-[color:var(--tamu-muted)] text-[color:var(--tamu)]">
-          Texas A&amp;M · Biomechanics
+          {/* ANON: was "Texas A&amp;M · Biomechanics" — restore after acceptance */}
+          Biomechanics Lab
         </span>
         <h1 className="text-3xl font-bold tracking-tight text-white">
           3D Motion Viewer
