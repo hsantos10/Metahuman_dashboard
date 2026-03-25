@@ -818,66 +818,185 @@ export default function InterpretabilityPage() {
 
         {/* ── DIAGNOSTICS ──────────────────────────────────────────── */}
         <TabsContent value="diagnostics" className="space-y-6">
-          <p className="text-sm text-zinc-400 max-w-2xl">
-            Diagnostic plots from the combined experiment investigating scale imbalance, coordinate
-            alignment, task-conditioned training, and raw attention structure. These visuals document
-            key engineering decisions made during training — normalisation choices, force-axis
-            sign-flip corrections, and task-label injection — and their measurable impact on
-            attention quality and prediction accuracy. Understanding these trade-offs is important
-            for anyone seeking to reproduce or extend these results.
+          <p className="text-sm text-zinc-400 max-w-3xl">
+            These diagnostics are the methodological preconditions for any meaningful cross-lab comparison.
+            The GroundLink and Patient Handling datasets differ simultaneously in coordinate frame (Z-up vs. Y-up),
+            task biomechanics, motion-capture hardware, force magnitudes, and AP force variance — so a naive
+            cross-lab experiment can fail for trivial reasons unrelated to learned representations.
+            Each diagnostic below rules out one such confound, leaving coordinate-frame incompatibility as
+            the leading explanation for the observed R² collapse to −0.45 or below when transferring
+            across laboratories without target-domain training data.
           </p>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {[
-              {
-                file: "diag1_scale_imbalance.png",
-                title: "Diag 1 — Scale Imbalance",
-                desc: "Force magnitude distributions before/after normalisation across GL and PH datasets.",
-              },
-              {
-                file: "diag2_coordinate_alignment.png",
-                title: "Diag 2 — Coordinate Alignment",
-                desc: "Verification of force-axis mapping after correcting the GroundLink Fx/Fy/Fz sign flip.",
-              },
-              {
-                file: "diag3_task_hint_curves.png",
-                title: "Diag 3 — Task Hint Curves",
-                desc: "Training loss curves with and without task-identity metadata injection.",
-              },
-              {
-                file: "diag4_attention_heatmaps.png",
-                title: "Diag 4 — Attention Heatmaps",
-                desc: "Raw attention weight matrices from Layer 1, Head 1 on representative trials.",
-              },
-              {
-                file: "diag4_attention_stats.png",
-                title: "Diag 4 — Attention Statistics",
-                desc: "Distribution of attention entropy and sparsity across all heads and layers.",
-              },
-              {
-                file: "diag4_per_head_attention.png",
-                title: "Diag 4 — Per-Head Attention",
-                desc: "Per-head attention statistics showing specialisation across the 8 attention heads.",
-              },
-            ].map((d) => (
-              <Card key={d.file}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">{d.title}</CardTitle>
-                  <CardDescription className="text-xs">{d.desc}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ChartLightbox title={d.title}>
-                    <Image
-                      src={`/outputs/diag/${d.file}`}
-                      alt={d.title}
-                      width={700}
-                      height={500}
-                      className="w-full rounded border"
-                      unoptimized
-                    />
-                  </ChartLightbox>
-                </CardContent>
-              </Card>
-            ))}
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+            {/* Diag 1 */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Diag 1 — Force Scale Imbalance</CardTitle>
+                <CardDescription className="text-xs leading-relaxed">
+                  PH vertical forces average 386 N versus 249 N for GL (1.55×), and the post-normalization
+                  AP force variance ratio reaches 11.4× — the single largest distributional mismatch between
+                  datasets. This plot shows per-channel force distributions before and after body-weight
+                  normalization, confirming that NBW normalization compresses but does not eliminate the gap.
+                  Residual scale differences explain why GL&apos;s AP force predictions collapse first under
+                  combined training while PH&apos;s AP force improves modestly.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Diag 1 — Force Scale Imbalance">
+                  <Image
+                    src="/outputs/diag/diag1_scale_imbalance.png"
+                    alt="Diag 1 — Force Scale Imbalance"
+                    width={700}
+                    height={500}
+                    className="w-full rounded border"
+                    unoptimized
+                  />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+
+            {/* Diag 2 */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Diag 2 — Coordinate Axis Alignment</CardTitle>
+                <CardDescription className="text-xs leading-relaxed">
+                  GL encodes force as (Fx=AP, Fy=ML, Fz=vertical) in a Z-up frame; PH uses
+                  (vx=ML, vy=vertical, vz=AP) in OpenSim&apos;s Y-up convention. Training across datasets
+                  without correcting this axis mapping would cause the model to conflate AP and ML force
+                  signals, making cross-lab failure appear far worse than it is. This diagnostic verifies
+                  that after axis remapping and sign-flip correction, the unified force representation is
+                  physically consistent across both labs — ruling out bookkeeping error as a contributor
+                  to the observed −0.45 cross-lab R².
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Diag 2 — Coordinate Axis Alignment">
+                  <Image
+                    src="/outputs/diag/diag2_coordinate_alignment.png"
+                    alt="Diag 2 — Coordinate Axis Alignment"
+                    width={700}
+                    height={500}
+                    className="w-full rounded border"
+                    unoptimized
+                  />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+
+            {/* Diag 3 */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Diag 3 — Task-Hint Training Curves</CardTitle>
+                <CardDescription className="text-xs leading-relaxed">
+                  If a model can infer lab identity from the input distribution alone, it can learn
+                  separate force mappings per dataset without learning any transferable kinematic-to-force
+                  relationship — making combined training an illusion of generalization. This diagnostic
+                  compares training loss curves when explicit task-identity metadata (a one-hot lab indicator)
+                  is injected versus withheld. Similar convergence in both conditions suggests the model
+                  already detects the distributional shift implicitly, meaning that even
+                  &ldquo;task-blind&rdquo; combined training may exploit lab-specific statistics rather than
+                  learning genuinely transferable representations.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Diag 3 — Task-Hint Training Curves">
+                  <Image
+                    src="/outputs/diag/diag3_task_hint_curves.png"
+                    alt="Diag 3 — Task-Hint Training Curves"
+                    width={700}
+                    height={500}
+                    className="w-full rounded border"
+                    unoptimized
+                  />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+
+            {/* Diag 4a */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Diag 4a — Raw Attention Heatmaps</CardTitle>
+                <CardDescription className="text-xs leading-relaxed">
+                  Query × key attention weight matrices from Layer 1, Head 1 on representative trials
+                  from each dataset. Diagonal bands reflect local temporal tracking; sharp off-diagonal
+                  spikes indicate the model attending across long time intervals — for example, using
+                  heel-strike kinematics as a reference while predicting toe-off forces. Comparing GL and
+                  PH heatmaps provides a qualitative check on whether the learned attention structure
+                  (sparse, event-anchored) is consistent across datasets despite their different
+                  coordinate frames and task types.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Diag 4a — Raw Attention Heatmaps">
+                  <Image
+                    src="/outputs/diag/diag4_attention_heatmaps.png"
+                    alt="Diag 4a — Raw Attention Heatmaps"
+                    width={700}
+                    height={500}
+                    className="w-full rounded border"
+                    unoptimized
+                  />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+
+            {/* Diag 4b */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Diag 4b — Attention Entropy &amp; Sparsity Distributions</CardTitle>
+                <CardDescription className="text-xs leading-relaxed">
+                  Distributions of attention entropy (bits) and sparsity (% weights below 0.01 threshold)
+                  across all 16 heads, both transformer layers, and all combined-CV folds. The 97.5% mean
+                  sparsity and ~8.3-bit mean entropy reported in the KPIs above are aggregate summaries of
+                  these distributions. Tight, consistent distributions confirm that high sparsity is a robust
+                  property of the model rather than an artifact of a single outlier head or unusually
+                  easy fold — it holds across the full experimental matrix.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Diag 4b — Attention Entropy & Sparsity Distributions">
+                  <Image
+                    src="/outputs/diag/diag4_attention_stats.png"
+                    alt="Diag 4b — Attention Entropy & Sparsity Distributions"
+                    width={700}
+                    height={500}
+                    className="w-full rounded border"
+                    unoptimized
+                  />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+
+            {/* Diag 4c */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Diag 4c — Per-Head Attention Specialisation</CardTitle>
+                <CardDescription className="text-xs leading-relaxed">
+                  Head-by-head entropy and sparsity statistics across the 8 attention heads in each
+                  transformer layer. Some heads are persistently more focused (lower entropy) while others
+                  maintain broader attention — this is the head competition visible in the animation tab&apos;s
+                  head-race videos. The diversity in per-head sparsity confirms that the 16 heads are not
+                  computing redundant transformations; they partition the sequence&apos;s temporal structure,
+                  with different heads specialising on different biomechanical events such as stance
+                  initiation, peak loading, and swing phase.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartLightbox title="Diag 4c — Per-Head Attention Specialisation">
+                  <Image
+                    src="/outputs/diag/diag4_per_head_attention.png"
+                    alt="Diag 4c — Per-Head Attention Specialisation"
+                    width={700}
+                    height={500}
+                    className="w-full rounded border"
+                    unoptimized
+                  />
+                </ChartLightbox>
+              </CardContent>
+            </Card>
+
           </div>
         </TabsContent>
 
