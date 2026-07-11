@@ -159,6 +159,31 @@ const m6CrossLab = [
   { source: "GL→PH (ICF)",      meanR2: -2.93 },
   { source: "GL→PH (CNN)",      meanR2: -10.59 },
 ];
+/* Per-feature R² on the corrected pipeline (all 10 channels × 3 models) */
+const m6FeatGL = [
+  { feature: "Vertical (F1)", icf: 0.622, cnnLstm: 0.596, cnn: 0.668 },
+  { feature: "Vertical (F2)", icf: 0.716, cnnLstm: 0.643, cnn: 0.651 },
+  { feature: "CoP X (F1)",    icf: 0.858, cnnLstm: 0.898, cnn: 0.905 },
+  { feature: "CoP X (F2)",    icf: 0.792, cnnLstm: 0.748, cnn: 0.697 },
+  { feature: "CoP Z (F1)",    icf: 0.504, cnnLstm: 0.643, cnn: 0.466 },
+  { feature: "CoP Z (F2)",    icf: 0.658, cnnLstm: 0.701, cnn: 0.604 },
+  { feature: "ML (F1)",       icf: 0.610, cnnLstm: 0.700, cnn: 0.709 },
+  { feature: "ML (F2)",       icf: 0.640, cnnLstm: 0.706, cnn: 0.699 },
+  { feature: "AP (F1)",       icf: 0.647, cnnLstm: 0.743, cnn: 0.731 },
+  { feature: "AP (F2)",       icf: 0.651, cnnLstm: 0.712, cnn: 0.718 },
+];
+const m6FeatPH = [
+  { feature: "Vertical (F1)", icf: 0.745, cnnLstm: 0.781, cnn: 0.741 },
+  { feature: "Vertical (F2)", icf: 0.654, cnnLstm: 0.680, cnn: 0.644 },
+  { feature: "CoP X (F1)",    icf: 0.922, cnnLstm: 0.854, cnn: 0.785 },
+  { feature: "CoP X (F2)",    icf: 0.848, cnnLstm: 0.764, cnn: 0.687 },
+  { feature: "CoP Z (F1)",    icf: 0.710, cnnLstm: 0.754, cnn: 0.721 },
+  { feature: "CoP Z (F2)",    icf: 0.664, cnnLstm: 0.687, cnn: 0.653 },
+  { feature: "ML (F1)",       icf: 0.557, cnnLstm: 0.586, cnn: 0.571 },
+  { feature: "ML (F2)",       icf: 0.215, cnnLstm: 0.265, cnn: 0.131 },
+  { feature: "AP (F1)",       icf: 0.617, cnnLstm: 0.618, cnn: 0.601 },
+  { feature: "AP (F2)",       icf: 0.363, cnnLstm: 0.384, cnn: 0.320 },
+];
 
 /* ─────────────────────────────────────────────
    Helpers
@@ -1135,6 +1160,59 @@ export default function BenchmarksPage() {
                 ICF&apos;s global attention was partly compensating for the mis-framed AP target. Once every
                 model can learn AP correctly, the simpler CNN-LSTM matches or beats it — supporting an
                 evaluation-rigor framing over an architecture-advance claim.
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Per-feature comparison (corrected) */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Per-Feature R² — Corrected Pipeline</CardTitle>
+              <CardDescription className="text-xs">
+                All 10 GRF/CoP channels · best model per row in bold · color = R² band
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                {[
+                  { title: "GroundLink", rows: m6FeatGL },
+                  { title: "Patient Handling", rows: m6FeatPH },
+                ].map((blk) => (
+                  <div key={blk.title}>
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">{blk.title}</p>
+                    <div className="rounded border border-zinc-800 overflow-x-auto">
+                      <table className="w-full text-[11px]">
+                        <thead>
+                          <tr className="border-b border-zinc-800 bg-zinc-900/60">
+                            <th className="text-left px-3 py-2 font-mono text-zinc-600">Feature</th>
+                            <th className="text-center px-2 py-2 font-mono text-zinc-500">ICF</th>
+                            <th className="text-center px-2 py-2 font-mono text-zinc-500">CNN-LSTM</th>
+                            <th className="text-center px-2 py-2 font-mono text-zinc-500">CNN</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {blk.rows.map((r) => {
+                            const best = Math.max(r.icf, r.cnnLstm, r.cnn);
+                            return (
+                              <tr key={r.feature} className="border-b border-zinc-800/50">
+                                <td className="px-3 py-1.5 font-mono text-zinc-400">{r.feature}</td>
+                                <td className={`px-2 py-1.5 text-center font-mono ${r2CellClass(r.icf)} ${r.icf === best ? "font-semibold" : "opacity-90"}`}>{r.icf.toFixed(3)}</td>
+                                <td className={`px-2 py-1.5 text-center font-mono ${r2CellClass(r.cnnLstm)} ${r.cnnLstm === best ? "font-semibold" : "opacity-90"}`}>{r.cnnLstm.toFixed(3)}</td>
+                                <td className={`px-2 py-1.5 text-center font-mono ${r2CellClass(r.cnn)} ${r.cnn === best ? "font-semibold" : "opacity-90"}`}>{r.cnn.toFixed(3)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 rounded bg-zinc-900/50 border border-zinc-800/50 p-2.5 text-[11px] text-zinc-500">
+                <span className="text-zinc-300 font-medium">Read against the Per-Feature tab:</span>{" "}
+                AP (F1/F2) on GroundLink now sits at ~0.65–0.74 for all models (was ~0.09–0.31 as submitted).
+                The remaining weak spot — right-side ML/AP (F2) on Patient Handling — is genuine biomechanical
+                difficulty, not a preprocessing artifact.
               </div>
             </CardContent>
           </Card>
