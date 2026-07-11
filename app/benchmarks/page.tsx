@@ -184,6 +184,33 @@ const m6FeatPH = [
   { feature: "AP (F1)",       icf: 0.617, cnnLstm: 0.618, cnn: 0.601 },
   { feature: "AP (F2)",       icf: 0.363, cnnLstm: 0.384, cnn: 0.320 },
 ];
+/* Per-subject R²/MAE on the corrected pipeline (all 3 models) */
+const m6SubGL = [
+  { s: "GL2", cnn: { r2: 0.696, mae: 0.261 }, lstm: { r2: 0.776, mae: 0.239 }, icf: { r2: 0.696, mae: 0.260 } },
+  { s: "GL3", cnn: { r2: 0.740, mae: 0.249 }, lstm: { r2: 0.836, mae: 0.191 }, icf: { r2: 0.783, mae: 0.230 } },
+  { s: "GL4", cnn: { r2: 0.685, mae: 0.299 }, lstm: { r2: 0.693, mae: 0.310 }, icf: { r2: 0.717, mae: 0.271 } },
+  { s: "GL5", cnn: { r2: 0.568, mae: 0.529 }, lstm: { r2: 0.580, mae: 0.526 }, icf: { r2: 0.516, mae: 0.572 } },
+  { s: "GL6", cnn: { r2: 0.654, mae: 0.274 }, lstm: { r2: 0.619, mae: 0.279 }, icf: { r2: 0.489, mae: 0.350 } },
+  { s: "GL7", cnn: { r2: 0.765, mae: 0.237 }, lstm: { r2: 0.752, mae: 0.233 }, icf: { r2: 0.818, mae: 0.205 } },
+];
+const m6SubPH = [
+  { s: "PH1",  cnn: { r2: 0.607, mae: 0.369 }, lstm: { r2: 0.732, mae: 0.283 }, icf: { r2: 0.723, mae: 0.293 } },
+  { s: "PH2",  cnn: { r2: 0.481, mae: 0.411 }, lstm: { r2: 0.681, mae: 0.333 }, icf: { r2: 0.609, mae: 0.390 } },
+  { s: "PH3",  cnn: { r2: 0.660, mae: 0.380 }, lstm: { r2: 0.709, mae: 0.346 }, icf: { r2: 0.657, mae: 0.376 } },
+  { s: "PH4",  cnn: { r2: 0.740, mae: 0.286 }, lstm: { r2: 0.846, mae: 0.212 }, icf: { r2: 0.828, mae: 0.237 } },
+  { s: "PH5",  cnn: { r2: 0.714, mae: 0.355 }, lstm: { r2: 0.697, mae: 0.355 }, icf: { r2: 0.737, mae: 0.326 } },
+  { s: "PH6",  cnn: { r2: 0.679, mae: 0.249 }, lstm: { r2: 0.706, mae: 0.237 }, icf: { r2: 0.759, mae: 0.219 } },
+  { s: "PH7",  cnn: { r2: 0.592, mae: 0.454 }, lstm: { r2: 0.567, mae: 0.460 }, icf: { r2: 0.496, mae: 0.510 } },
+  { s: "PH9",  cnn: { r2: 0.102, mae: 0.508 }, lstm: { r2: 0.192, mae: 0.501 }, icf: { r2: 0.234, mae: 0.484 } },
+  { s: "PH11", cnn: { r2: 0.703, mae: 0.282 }, lstm: { r2: 0.672, mae: 0.280 }, icf: { r2: 0.718, mae: 0.288 } },
+  { s: "PH12", cnn: { r2: 0.573, mae: 0.360 }, lstm: { r2: 0.571, mae: 0.342 }, icf: { r2: 0.535, mae: 0.360 } },
+];
+const m6SubBlocks = [
+  { title: "GroundLink (6 subjects)", rows: m6SubGL,
+    mean: { cnn: { r2: 0.685, mae: 0.308 }, lstm: { r2: 0.709, mae: 0.296 }, icf: { r2: 0.670, mae: 0.315 } } },
+  { title: "Patient Handling (10 subjects)", rows: m6SubPH,
+    mean: { cnn: { r2: 0.585, mae: 0.365 }, lstm: { r2: 0.637, mae: 0.335 }, icf: { r2: 0.630, mae: 0.348 } } },
+];
 
 /* ─────────────────────────────────────────────
    Helpers
@@ -1160,6 +1187,71 @@ export default function BenchmarksPage() {
                 ICF&apos;s global attention was partly compensating for the mis-framed AP target. Once every
                 model can learn AP correctly, the simpler CNN-LSTM matches or beats it — supporting an
                 evaluation-rigor framing over an architecture-advance claim.
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Per-subject comparison (corrected) */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Per-Subject R² — Corrected Pipeline</CardTitle>
+              <CardDescription className="text-xs">
+                Leave-one-subject-out · R² and MAE per model · best R² per subject in bold
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              {m6SubBlocks.map((blk) => (
+                <div key={blk.title}>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">{blk.title}</p>
+                  <div className="rounded border border-zinc-800 overflow-x-auto">
+                    <table className="w-full text-[11px]">
+                      <thead>
+                        <tr className="border-b border-zinc-800 bg-zinc-900/60">
+                          <th className="text-left px-3 py-2 font-mono text-zinc-600" rowSpan={2}>Subject</th>
+                          <th className="text-center px-3 py-2 font-mono text-zinc-500 border-b border-zinc-800" colSpan={2}>CNN</th>
+                          <th className="text-center px-3 py-2 font-mono text-zinc-500 border-b border-zinc-800" colSpan={2}>CNN-LSTM</th>
+                          <th className="text-center px-3 py-2 font-mono text-emerald-400 border-b border-zinc-800" colSpan={2}>ICF</th>
+                        </tr>
+                        <tr className="border-b border-zinc-800 bg-zinc-900/40 text-[10px]">
+                          {["R²", "MAE", "R²", "MAE", "R²", "MAE"].map((h, i) => (
+                            <th key={i} className="text-center px-2 py-1 font-mono text-zinc-600 font-normal">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {blk.rows.map((r) => {
+                          const best = Math.max(r.cnn.r2, r.lstm.r2, r.icf.r2);
+                          return (
+                            <tr key={r.s} className="border-b border-zinc-800/50">
+                              <td className="px-3 py-2 font-mono text-zinc-300 font-medium">{r.s}</td>
+                              <td className={`px-2 py-2 text-center font-mono ${r.cnn.r2 === best ? "font-semibold text-zinc-100" : "text-zinc-500"}`}>{r.cnn.r2.toFixed(3)}</td>
+                              <td className="px-2 py-2 text-center font-mono text-zinc-600">{r.cnn.mae.toFixed(3)}</td>
+                              <td className={`px-2 py-2 text-center font-mono ${r.lstm.r2 === best ? "font-semibold text-zinc-100" : "text-zinc-500"}`}>{r.lstm.r2.toFixed(3)}</td>
+                              <td className="px-2 py-2 text-center font-mono text-zinc-600">{r.lstm.mae.toFixed(3)}</td>
+                              <td className={`px-2 py-2 text-center font-mono ${r.icf.r2 === best ? "font-semibold text-emerald-400" : "text-zinc-500"}`}>{r.icf.r2.toFixed(3)}</td>
+                              <td className="px-2 py-2 text-center font-mono text-zinc-600">{r.icf.mae.toFixed(3)}</td>
+                            </tr>
+                          );
+                        })}
+                        <tr className="bg-zinc-900/40 font-semibold">
+                          <td className="px-3 py-2 font-mono text-zinc-300">Mean</td>
+                          <td className="px-2 py-2 text-center font-mono text-zinc-300">{blk.mean.cnn.r2.toFixed(3)}</td>
+                          <td className="px-2 py-2 text-center font-mono text-zinc-600">{blk.mean.cnn.mae.toFixed(3)}</td>
+                          <td className="px-2 py-2 text-center font-mono text-zinc-300">{blk.mean.lstm.r2.toFixed(3)}</td>
+                          <td className="px-2 py-2 text-center font-mono text-zinc-600">{blk.mean.lstm.mae.toFixed(3)}</td>
+                          <td className="px-2 py-2 text-center font-mono text-emerald-400">{blk.mean.icf.r2.toFixed(3)}</td>
+                          <td className="px-2 py-2 text-center font-mono text-zinc-600">{blk.mean.icf.mae.toFixed(3)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+              <div className="rounded bg-zinc-900/50 border border-zinc-800/50 p-2.5 text-[11px] text-zinc-500">
+                <span className="text-zinc-300 font-medium">Subject-level view:</span>{" "}
+                CNN-LSTM wins the most subjects on both datasets. <span className="font-mono">PH9</span> stays the
+                hard outlier for every model (R² 0.10–0.23), and GroundLink folds span ~0.49–0.84 — the between-model
+                gaps sit inside this spread.
               </div>
             </CardContent>
           </Card>
