@@ -149,7 +149,7 @@ export default function ReplayPage() {
         <CardContent className="p-0">
           <div className="relative h-[460px] md:h-[540px]">
             {data && <ForceReplay data={data} predKey={predKey} compareKey={compareKey} ctl={C} cameraPreset={camera} />}
-            <div className="pointer-events-none absolute left-3 top-3 max-w-[calc(100%-11rem)] sm:max-w-sm rounded-md bg-zinc-950/80 p-2.5 text-[11px] leading-snug text-zinc-300">
+            <div className="pointer-events-none absolute left-3 top-3 max-w-[min(24rem,calc(100%-11rem))] rounded-md bg-zinc-950/80 p-2.5 text-[11px] leading-snug text-zinc-300">
               {stepInfo}
             </div>
             {now && (
