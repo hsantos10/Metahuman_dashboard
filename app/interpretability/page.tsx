@@ -219,33 +219,6 @@ export default function InterpretabilityPage() {
             </CardContent>
           </Card>
 
-          {/* PH LOSO — best trial R²=0.891 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Patient Handling LOSO — Best Trial (R² = 0.891, Subject PH1)</CardTitle>
-              <CardDescription>
-                Attention animations for the best PH trial. Occupational patient-handling tasks have
-                longer, aperiodic movement sequences — notice how the attention patterns differ from the
-                stereotyped locomotion above.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                {[
-                  { src: "/outputs/animations/ph_head_race.gif", label: "Head Race" },
-                  { src: "/outputs/animations/ph_buildup.gif",   label: "Buildup" },
-                  { src: "/outputs/animations/ph_sweep.gif",     label: "Sweep" },
-                ].map((a) => (
-                  <div key={a.src} className="space-y-1">
-                    <p className="text-xs font-semibold text-zinc-400">{a.label}</p>
-                    <ChartLightbox title={`PH Best Trial — ${a.label}`}>
-                      <Image src={a.src} alt={`PH ${a.label}`} width={600} height={400} className="w-full rounded border border-zinc-800" unoptimized />
-                    </ChartLightbox>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Combined CV — best trial R²=0.906 */}
           <Card>
@@ -702,19 +675,10 @@ export default function InterpretabilityPage() {
                         </ChartLightbox>
                       </div>
                       <div>
-                        <p className="mb-1 text-[10px] text-zinc-500">
-                          Patient Handling held-out
+                        <p className="mb-1 text-[10px] text-zinc-500">Patient Handling held-out</p>
+                        <p className="rounded border border-zinc-800 p-3 text-[11px] text-zinc-500">
+                          Removed: this overlay plotted a participant&apos;s force trace (IRB-protected data).
                         </p>
-                        <ChartLightbox title={`Fold ${fold} — Patient Handling Attention Overlay`}>
-                          <Image
-                            src={`/outputs/combined/fold_${fold}/attn_overlaid_fold${fold}_PH.png`}
-                            alt={`Attention overlay fold ${fold} PH`}
-                            width={500}
-                            height={300}
-                            className="w-full rounded border"
-                            unoptimized
-                          />
-                        </ChartLightbox>
                       </div>
                     </div>
                   </div>
@@ -781,7 +745,7 @@ export default function InterpretabilityPage() {
             <CardHeader>
               <CardTitle>Predicted vs Ground Truth — All Folds</CardTitle>
               <CardDescription>
-                Time-series overlays for both GL and PH held-out subjects. Green
+                Time-series overlays for GroundLink held-out subjects (Patient Handling samples removed: IRB-protected data). Green
                 = ground truth, blue = model prediction.
               </CardDescription>
             </CardHeader>
@@ -793,7 +757,7 @@ export default function InterpretabilityPage() {
                       Fold {fold}
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
-                      {["GL_sample0", "GL_sample1", "PH_sample0", "PH_sample1"].map(
+                      {["GL_sample0", "GL_sample1"].map(
                         (s) => (
                           <div key={s}>
                             <p className="mb-1 text-[10px] font-medium text-slate-500">
