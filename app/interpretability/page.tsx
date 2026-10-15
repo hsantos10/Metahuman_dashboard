@@ -1,5 +1,7 @@
 "use client";
 
+import ArchiveBanner from "@/components/archive-banner";
+
 import {
   BarChart,
   Bar,
@@ -83,6 +85,7 @@ export default function InterpretabilityPage() {
 
   return (
     <div className="space-y-6">
+      <ArchiveBanner what="The attention analysis was dropped from the paper." />
       <div className="space-y-2">
         <span className="rounded px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-widest bg-[color:var(--tamu-muted)] text-[color:var(--tamu)]">
           {/* ANON: was "Texas A&M · Biomechanics" — restore after acceptance */}

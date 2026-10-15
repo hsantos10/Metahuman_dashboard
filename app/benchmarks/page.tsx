@@ -1,5 +1,7 @@
 "use client";
 
+import ArchiveBanner from "@/components/archive-banner";
+
 import {
   BarChart,
   Bar,
@@ -261,6 +263,7 @@ export default function BenchmarksPage() {
 
   return (
     <div className="space-y-6 max-w-7xl">
+      <ArchiveBanner what="These are the benchmarks as submitted to TMLR." />
       <div className="space-y-2">
         <span className="rounded px-2 py-0.5 text-[10px] font-mono font-semibold uppercase tracking-widest bg-[color:var(--tamu-muted)] text-[color:var(--tamu)]">
           {/* ANON: was "Texas A&amp;M · Biomechanics" — restore after acceptance */}

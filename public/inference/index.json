@@ -1,0 +1,385 @@
+{
+ "generated": "from code/runs/hprc/outputs/v2 (LOSO and trial split, seed 42)",
+ "trials": [
+  {
+   "id": "s004_20220524_walk_5",
+   "label": "Walk",
+   "subject": "GroundLink subject 4",
+   "n": 183,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": -0.044,
+     "vert_r2": 0.357,
+     "vert_rmse_pbw": 31.9,
+     "cop_cm": 22.8
+    },
+    "loso:CNN": {
+     "r2": -0.227,
+     "vert_r2": 0.112,
+     "vert_rmse_pbw": 37.4,
+     "cop_cm": 31.0
+    },
+    "loso:ICF (grid)": {
+     "r2": -0.289,
+     "vert_r2": 0.071,
+     "vert_rmse_pbw": 38.3,
+     "cop_cm": 37.3
+    },
+    "loso:ICF (search)": {
+     "r2": -0.406,
+     "vert_r2": -0.018,
+     "vert_rmse_pbw": 40.1,
+     "cop_cm": 26.3
+    },
+    "trial:CNN-LSTM": {
+     "r2": -0.238,
+     "vert_r2": 0.388,
+     "vert_rmse_pbw": 31.1,
+     "cop_cm": 54.3
+    }
+   }
+  },
+  {
+   "id": "s002_20220520_squat_1",
+   "label": "Squat",
+   "subject": "GroundLink subject 2",
+   "n": 534,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.26,
+     "vert_r2": 0.607,
+     "vert_rmse_pbw": 4.9,
+     "cop_cm": 3.2
+    },
+    "loso:CNN": {
+     "r2": 0.325,
+     "vert_r2": 0.81,
+     "vert_rmse_pbw": 3.4,
+     "cop_cm": 4.1
+    },
+    "loso:ICF (grid)": {
+     "r2": 0.515,
+     "vert_r2": 0.842,
+     "vert_rmse_pbw": 3.1,
+     "cop_cm": 2.9
+    },
+    "loso:ICF (search)": {
+     "r2": 0.443,
+     "vert_r2": 0.865,
+     "vert_rmse_pbw": 2.9,
+     "cop_cm": 5.8
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.565,
+     "vert_r2": 0.844,
+     "vert_rmse_pbw": 3.1,
+     "cop_cm": 1.8
+    }
+   }
+  },
+  {
+   "id": "s003_20220523_jumpingjack_2",
+   "label": "Jumping jack",
+   "subject": "GroundLink subject 3",
+   "n": 608,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.26,
+     "vert_r2": 0.978,
+     "vert_rmse_pbw": 8.4,
+     "cop_cm": 5.4
+    },
+    "loso:CNN": {
+     "r2": 0.292,
+     "vert_r2": 0.97,
+     "vert_rmse_pbw": 9.9,
+     "cop_cm": 4.3
+    },
+    "loso:ICF (grid)": {
+     "r2": -0.027,
+     "vert_r2": 0.942,
+     "vert_rmse_pbw": 13.8,
+     "cop_cm": 3.9
+    },
+    "loso:ICF (search)": {
+     "r2": -0.837,
+     "vert_r2": 0.917,
+     "vert_rmse_pbw": 16.4,
+     "cop_cm": 7.2
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.034,
+     "vert_r2": 0.99,
+     "vert_rmse_pbw": 5.7,
+     "cop_cm": 4.0
+    }
+   }
+  },
+  {
+   "id": "s006_20220614_hopping_2",
+   "label": "Hopping",
+   "subject": "GroundLink subject 6",
+   "n": 631,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.249,
+     "vert_r2": 0.75,
+     "vert_rmse_pbw": 29.8,
+     "cop_cm": 10.3
+    },
+    "loso:CNN": {
+     "r2": 0.329,
+     "vert_r2": 0.782,
+     "vert_rmse_pbw": 27.8,
+     "cop_cm": 9.2
+    },
+    "loso:ICF (grid)": {
+     "r2": 0.185,
+     "vert_r2": 0.709,
+     "vert_rmse_pbw": 32.1,
+     "cop_cm": 11.0
+    },
+    "loso:ICF (search)": {
+     "r2": -0.011,
+     "vert_r2": 0.65,
+     "vert_rmse_pbw": 35.2,
+     "cop_cm": 12.1
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.282,
+     "vert_r2": 0.766,
+     "vert_rmse_pbw": 28.8,
+     "cop_cm": 9.8
+    }
+   }
+  },
+  {
+   "id": "s006_20220614_balletsmalljump_2",
+   "label": "Ballet small jump",
+   "subject": "GroundLink subject 6",
+   "n": 372,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.292,
+     "vert_r2": 0.924,
+     "vert_rmse_pbw": 10.2,
+     "cop_cm": 6.2
+    },
+    "loso:CNN": {
+     "r2": -0.059,
+     "vert_r2": 0.949,
+     "vert_rmse_pbw": 8.4,
+     "cop_cm": 9.1
+    },
+    "loso:ICF (grid)": {
+     "r2": -0.016,
+     "vert_r2": 0.665,
+     "vert_rmse_pbw": 21.5,
+     "cop_cm": 6.5
+    },
+    "loso:ICF (search)": {
+     "r2": -0.017,
+     "vert_r2": 0.394,
+     "vert_rmse_pbw": 28.9,
+     "cop_cm": 6.8
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.662,
+     "vert_r2": 0.965,
+     "vert_rmse_pbw": 7.0,
+     "cop_cm": 4.0
+    }
+   }
+  },
+  {
+   "id": "s004_20220524_soccerkick_2",
+   "label": "Soccer kick",
+   "subject": "GroundLink subject 4",
+   "n": 127,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.185,
+     "vert_r2": 0.966,
+     "vert_rmse_pbw": 9.0,
+     "cop_cm": 10.2
+    },
+    "loso:CNN": {
+     "r2": -0.22,
+     "vert_r2": 0.966,
+     "vert_rmse_pbw": 9.1,
+     "cop_cm": 9.0
+    },
+    "loso:ICF (grid)": {
+     "r2": 0.513,
+     "vert_r2": 0.924,
+     "vert_rmse_pbw": 13.5,
+     "cop_cm": 9.4
+    },
+    "loso:ICF (search)": {
+     "r2": 0.368,
+     "vert_r2": 0.907,
+     "vert_rmse_pbw": 14.9,
+     "cop_cm": 10.2
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.657,
+     "vert_r2": 0.965,
+     "vert_rmse_pbw": 9.1,
+     "cop_cm": 10.6
+    }
+   }
+  },
+  {
+   "id": "s006_20220614_tennisserve_3",
+   "label": "Tennis serve",
+   "subject": "GroundLink subject 6",
+   "n": 302,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.586,
+     "vert_r2": 0.897,
+     "vert_rmse_pbw": 11.9,
+     "cop_cm": 7.2
+    },
+    "loso:CNN": {
+     "r2": 0.495,
+     "vert_r2": 0.848,
+     "vert_rmse_pbw": 14.5,
+     "cop_cm": 7.8
+    },
+    "loso:ICF (grid)": {
+     "r2": 0.53,
+     "vert_r2": 0.87,
+     "vert_rmse_pbw": 13.4,
+     "cop_cm": 7.6
+    },
+    "loso:ICF (search)": {
+     "r2": 0.413,
+     "vert_r2": 0.678,
+     "vert_rmse_pbw": 21.1,
+     "cop_cm": 9.1
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.739,
+     "vert_r2": 0.919,
+     "vert_rmse_pbw": 10.6,
+     "cop_cm": 5.7
+    }
+   }
+  },
+  {
+   "id": "s004_20220524_dog_3",
+   "label": "Yoga: downward dog",
+   "subject": "GroundLink subject 4",
+   "n": 746,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.016,
+     "vert_r2": 0.218,
+     "vert_rmse_pbw": 16.5,
+     "cop_cm": 18.5
+    },
+    "loso:CNN": {
+     "r2": 0.191,
+     "vert_r2": 0.67,
+     "vert_rmse_pbw": 10.7,
+     "cop_cm": 17.3
+    },
+    "loso:ICF (grid)": {
+     "r2": 0.401,
+     "vert_r2": 0.739,
+     "vert_rmse_pbw": 9.5,
+     "cop_cm": 18.4
+    },
+    "loso:ICF (search)": {
+     "r2": -0.147,
+     "vert_r2": 0.334,
+     "vert_rmse_pbw": 15.2,
+     "cop_cm": 23.6
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.794,
+     "vert_r2": 0.854,
+     "vert_rmse_pbw": 7.1,
+     "cop_cm": 10.2
+    }
+   }
+  },
+  {
+   "id": "s006_20220614_taichi_3",
+   "label": "Tai chi",
+   "subject": "GroundLink subject 6",
+   "n": 918,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.547,
+     "vert_r2": 0.959,
+     "vert_rmse_pbw": 6.3,
+     "cop_cm": 6.2
+    },
+    "loso:CNN": {
+     "r2": 0.498,
+     "vert_r2": 0.878,
+     "vert_rmse_pbw": 10.8,
+     "cop_cm": 6.7
+    },
+    "loso:ICF (grid)": {
+     "r2": 0.464,
+     "vert_r2": 0.849,
+     "vert_rmse_pbw": 12.0,
+     "cop_cm": 9.4
+    },
+    "loso:ICF (search)": {
+     "r2": 0.222,
+     "vert_r2": 0.879,
+     "vert_rmse_pbw": 10.8,
+     "cop_cm": 13.0
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.762,
+     "vert_r2": 0.981,
+     "vert_rmse_pbw": 4.3,
+     "cop_cm": 4.7
+    }
+   }
+  },
+  {
+   "id": "s003_20220523_chair_2",
+   "label": "Yoga: chair",
+   "subject": "GroundLink subject 3",
+   "n": 1314,
+   "metrics": {
+    "loso:CNN-LSTM": {
+     "r2": 0.379,
+     "vert_r2": 0.741,
+     "vert_rmse_pbw": 3.9,
+     "cop_cm": 3.0
+    },
+    "loso:CNN": {
+     "r2": 0.398,
+     "vert_r2": 0.735,
+     "vert_rmse_pbw": 4.0,
+     "cop_cm": 2.1
+    },
+    "loso:ICF (grid)": {
+     "r2": 0.24,
+     "vert_r2": 0.625,
+     "vert_rmse_pbw": 4.7,
+     "cop_cm": 2.8
+    },
+    "loso:ICF (search)": {
+     "r2": 0.311,
+     "vert_r2": 0.716,
+     "vert_rmse_pbw": 4.1,
+     "cop_cm": 3.8
+    },
+    "trial:CNN-LSTM": {
+     "r2": 0.668,
+     "vert_r2": 0.921,
+     "vert_rmse_pbw": 2.2,
+     "cop_cm": 1.5
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,1019 @@
+{
+ "source": "paper/jbhi/results.json (v2 run family, GroundLink retrained after the 2026-10 unit fix)",
+ "headline": [
+  {
+   "dataset": "GL",
+   "model": "CNN-LSTM",
+   "loso": 0.804,
+   "seed_sd": 0.003,
+   "vert": 0.902,
+   "ml": 0.775,
+   "ap": 0.769,
+   "trial": 0.894
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN",
+   "loso": 0.76,
+   "seed_sd": 0.01,
+   "vert": 0.883,
+   "ml": 0.784,
+   "ap": 0.769,
+   "trial": 0.8
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (grid)",
+   "loso": 0.763,
+   "seed_sd": 0.012,
+   "vert": 0.877,
+   "ml": 0.77,
+   "ap": 0.729,
+   "trial": 0.802
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (search)",
+   "loso": 0.727,
+   "seed_sd": 0.014,
+   "vert": 0.848,
+   "ml": 0.719,
+   "ap": 0.667,
+   "trial": 0.791
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "loso": 0.622,
+   "seed_sd": 0.007,
+   "vert": 0.725,
+   "ml": 0.391,
+   "ap": 0.458,
+   "trial": 0.79
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "loso": 0.583,
+   "seed_sd": 0.008,
+   "vert": 0.695,
+   "ml": 0.358,
+   "ap": 0.441,
+   "trial": 0.777
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "loso": 0.642,
+   "seed_sd": 0.003,
+   "vert": 0.709,
+   "ml": 0.435,
+   "ap": 0.483,
+   "trial": 0.783
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "loso": 0.648,
+   "seed_sd": 0.015,
+   "vert": 0.711,
+   "ml": 0.451,
+   "ap": 0.485,
+   "trial": 0.79
+  }
+ ],
+ "ridge": {
+  "GL": {
+   "r2": 0.591,
+   "vert": 0.693
+  },
+  "PH": {
+   "r2": 0.279,
+   "vert": 0.396
+  }
+ },
+ "subjects": [
+  {
+   "dataset": "GL",
+   "model": "CNN-LSTM",
+   "subject": "gl_2",
+   "r2": 0.8
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN",
+   "subject": "gl_2",
+   "r2": 0.726
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (grid)",
+   "subject": "gl_2",
+   "r2": 0.75
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (search)",
+   "subject": "gl_2",
+   "r2": 0.704
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN-LSTM",
+   "subject": "gl_3",
+   "r2": 0.828
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN",
+   "subject": "gl_3",
+   "r2": 0.801
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (grid)",
+   "subject": "gl_3",
+   "r2": 0.818
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (search)",
+   "subject": "gl_3",
+   "r2": 0.804
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN-LSTM",
+   "subject": "gl_4",
+   "r2": 0.765
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN",
+   "subject": "gl_4",
+   "r2": 0.743
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (grid)",
+   "subject": "gl_4",
+   "r2": 0.736
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (search)",
+   "subject": "gl_4",
+   "r2": 0.674
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN-LSTM",
+   "subject": "gl_5",
+   "r2": 0.813
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN",
+   "subject": "gl_5",
+   "r2": 0.743
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (grid)",
+   "subject": "gl_5",
+   "r2": 0.698
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (search)",
+   "subject": "gl_5",
+   "r2": 0.663
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN-LSTM",
+   "subject": "gl_6",
+   "r2": 0.801
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN",
+   "subject": "gl_6",
+   "r2": 0.772
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (grid)",
+   "subject": "gl_6",
+   "r2": 0.741
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (search)",
+   "subject": "gl_6",
+   "r2": 0.712
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN-LSTM",
+   "subject": "gl_7",
+   "r2": 0.818
+  },
+  {
+   "dataset": "GL",
+   "model": "CNN",
+   "subject": "gl_7",
+   "r2": 0.776
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (grid)",
+   "subject": "gl_7",
+   "r2": 0.838
+  },
+  {
+   "dataset": "GL",
+   "model": "ICF (search)",
+   "subject": "gl_7",
+   "r2": 0.804
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_1",
+   "r2": 0.71
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_1",
+   "r2": 0.65
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_1",
+   "r2": 0.702
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_1",
+   "r2": 0.731
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_2",
+   "r2": 0.68
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_2",
+   "r2": 0.333
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_2",
+   "r2": 0.654
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_2",
+   "r2": 0.663
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_3",
+   "r2": 0.703
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_3",
+   "r2": 0.654
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_3",
+   "r2": 0.693
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_3",
+   "r2": 0.707
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_4",
+   "r2": 0.822
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_4",
+   "r2": 0.786
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_4",
+   "r2": 0.811
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_4",
+   "r2": 0.819
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_5",
+   "r2": 0.691
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_5",
+   "r2": 0.674
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_5",
+   "r2": 0.734
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_5",
+   "r2": 0.747
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_6",
+   "r2": 0.724
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_6",
+   "r2": 0.685
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_6",
+   "r2": 0.771
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_6",
+   "r2": 0.761
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_7",
+   "r2": 0.543
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_7",
+   "r2": 0.563
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_7",
+   "r2": 0.49
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_7",
+   "r2": 0.512
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_9",
+   "r2": 0.156
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_9",
+   "r2": 0.208
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_9",
+   "r2": 0.226
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_9",
+   "r2": 0.229
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_11",
+   "r2": 0.694
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_11",
+   "r2": 0.731
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_11",
+   "r2": 0.78
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_11",
+   "r2": 0.785
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN-LSTM",
+   "subject": "ph_12",
+   "r2": 0.495
+  },
+  {
+   "dataset": "PH",
+   "model": "CNN",
+   "subject": "ph_12",
+   "r2": 0.542
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (grid)",
+   "subject": "ph_12",
+   "r2": 0.555
+  },
+  {
+   "dataset": "PH",
+   "model": "ICF (search)",
+   "subject": "ph_12",
+   "r2": 0.528
+  }
+ ],
+ "frame": [
+  {
+   "model": "ICF",
+   "dataset": "GL",
+   "arm": "baseline",
+   "r2": 0.59,
+   "vert": 0.816,
+   "ml": 0.682,
+   "ap": 0.108,
+   "px": 0.808,
+   "pz": 0.536
+  },
+  {
+   "model": "ICF",
+   "dataset": "GL",
+   "arm": "corot",
+   "r2": 0.713,
+   "vert": 0.828,
+   "ml": 0.688,
+   "ap": 0.675,
+   "px": 0.808,
+   "pz": 0.566
+  },
+  {
+   "model": "ICF",
+   "dataset": "GL",
+   "arm": "perfold",
+   "r2": 0.608,
+   "vert": 0.862,
+   "ml": 0.716,
+   "ap": 0.057,
+   "px": 0.838,
+   "pz": 0.57
+  },
+  {
+   "model": "ICF",
+   "dataset": "GL",
+   "arm": "both",
+   "r2": 0.732,
+   "vert": 0.854,
+   "ml": 0.722,
+   "ap": 0.7,
+   "px": 0.834,
+   "pz": 0.55
+  },
+  {
+   "model": "ICF",
+   "dataset": "PH",
+   "arm": "baseline",
+   "r2": 0.588,
+   "vert": 0.664,
+   "ml": 0.483,
+   "ap": 0.397,
+   "px": 0.791,
+   "pz": 0.607
+  },
+  {
+   "model": "ICF",
+   "dataset": "PH",
+   "arm": "corot",
+   "r2": 0.583,
+   "vert": 0.657,
+   "ml": 0.42,
+   "ap": 0.448,
+   "px": 0.796,
+   "pz": 0.594
+  },
+  {
+   "model": "ICF",
+   "dataset": "PH",
+   "arm": "perfold",
+   "r2": 0.636,
+   "vert": 0.7,
+   "ml": 0.507,
+   "ap": 0.386,
+   "px": 0.88,
+   "pz": 0.705
+  },
+  {
+   "model": "ICF",
+   "dataset": "PH",
+   "arm": "both",
+   "r2": 0.627,
+   "vert": 0.697,
+   "ml": 0.417,
+   "ap": 0.43,
+   "px": 0.892,
+   "pz": 0.697
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "GL",
+   "arm": "baseline",
+   "r2": 0.648,
+   "vert": 0.856,
+   "ml": 0.698,
+   "ap": 0.228,
+   "px": 0.81,
+   "pz": 0.65
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "GL",
+   "arm": "corot",
+   "r2": 0.721,
+   "vert": 0.835,
+   "ml": 0.695,
+   "ap": 0.653,
+   "px": 0.794,
+   "pz": 0.628
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "GL",
+   "arm": "perfold",
+   "r2": 0.695,
+   "vert": 0.905,
+   "ml": 0.779,
+   "ap": 0.246,
+   "px": 0.842,
+   "pz": 0.705
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "GL",
+   "arm": "both",
+   "r2": 0.801,
+   "vert": 0.895,
+   "ml": 0.791,
+   "ap": 0.766,
+   "px": 0.832,
+   "pz": 0.723
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "PH",
+   "arm": "baseline",
+   "r2": 0.589,
+   "vert": 0.662,
+   "ml": 0.49,
+   "ap": 0.395,
+   "px": 0.814,
+   "pz": 0.586
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "PH",
+   "arm": "corot",
+   "r2": 0.569,
+   "vert": 0.647,
+   "ml": 0.393,
+   "ap": 0.432,
+   "px": 0.804,
+   "pz": 0.569
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "PH",
+   "arm": "perfold",
+   "r2": 0.62,
+   "vert": 0.73,
+   "ml": 0.492,
+   "ap": 0.371,
+   "px": 0.822,
+   "pz": 0.686
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "PH",
+   "arm": "both",
+   "r2": 0.614,
+   "vert": 0.723,
+   "ml": 0.376,
+   "ap": 0.489,
+   "px": 0.801,
+   "pz": 0.682
+  },
+  {
+   "model": "CNN",
+   "dataset": "GL",
+   "arm": "baseline",
+   "r2": 0.603,
+   "vert": 0.788,
+   "ml": 0.677,
+   "ap": 0.268,
+   "px": 0.747,
+   "pz": 0.536
+  },
+  {
+   "model": "CNN",
+   "dataset": "GL",
+   "arm": "corot",
+   "r2": 0.683,
+   "vert": 0.781,
+   "ml": 0.671,
+   "ap": 0.686,
+   "px": 0.748,
+   "pz": 0.529
+  },
+  {
+   "model": "CNN",
+   "dataset": "GL",
+   "arm": "perfold",
+   "r2": 0.657,
+   "vert": 0.888,
+   "ml": 0.772,
+   "ap": 0.254,
+   "px": 0.824,
+   "pz": 0.546
+  },
+  {
+   "model": "CNN",
+   "dataset": "GL",
+   "arm": "both",
+   "r2": 0.76,
+   "vert": 0.884,
+   "ml": 0.784,
+   "ap": 0.761,
+   "px": 0.82,
+   "pz": 0.553
+  },
+  {
+   "model": "CNN",
+   "dataset": "PH",
+   "arm": "baseline",
+   "r2": 0.516,
+   "vert": 0.577,
+   "ml": 0.445,
+   "ap": 0.332,
+   "px": 0.694,
+   "pz": 0.534
+  },
+  {
+   "model": "CNN",
+   "dataset": "PH",
+   "arm": "corot",
+   "r2": 0.523,
+   "vert": 0.593,
+   "ml": 0.356,
+   "ap": 0.427,
+   "px": 0.693,
+   "pz": 0.543
+  },
+  {
+   "model": "CNN",
+   "dataset": "PH",
+   "arm": "perfold",
+   "r2": 0.606,
+   "vert": 0.697,
+   "ml": 0.519,
+   "ap": 0.387,
+   "px": 0.768,
+   "pz": 0.658
+  },
+  {
+   "model": "CNN",
+   "dataset": "PH",
+   "arm": "both",
+   "r2": 0.577,
+   "vert": 0.684,
+   "ml": 0.355,
+   "ap": 0.451,
+   "px": 0.714,
+   "pz": 0.681
+  }
+ ],
+ "newton": [
+  {
+   "dataset": "GL",
+   "targets": "plate frame",
+   "ap": -0.109,
+   "ml": 0.424,
+   "vert": 0.482
+  },
+  {
+   "dataset": "GL",
+   "targets": "co-rotated",
+   "ap": 0.29,
+   "ml": 0.441,
+   "vert": 0.482
+  },
+  {
+   "dataset": "PH",
+   "targets": "plate frame",
+   "ap": 0.005,
+   "ml": -0.035,
+   "vert": 0.213
+  },
+  {
+   "dataset": "PH",
+   "targets": "co-rotated",
+   "ap": 0.045,
+   "ml": -0.076,
+   "vert": 0.213
+  }
+ ],
+ "crosslab": [
+  {
+   "direction": "GL -> PH",
+   "model": "ICF",
+   "r2": -3.727,
+   "vert": -0.711,
+   "ml": -3.721,
+   "ap": -0.906,
+   "px": -2.166,
+   "pz": -11.128
+  },
+  {
+   "direction": "PH -> GL",
+   "model": "ICF",
+   "r2": -1.076,
+   "vert": -0.585,
+   "ml": -1.444,
+   "ap": -0.465,
+   "px": -1.173,
+   "pz": -1.712
+  },
+  {
+   "direction": "GL -> PH",
+   "model": "CNN-LSTM",
+   "r2": -1.912,
+   "vert": -0.653,
+   "ml": -0.844,
+   "ap": -1.022,
+   "px": -0.225,
+   "pz": -6.818
+  },
+  {
+   "direction": "PH -> GL",
+   "model": "CNN-LSTM",
+   "r2": -0.351,
+   "vert": 0.122,
+   "ml": -0.758,
+   "ap": -0.144,
+   "px": -0.236,
+   "pz": -0.739
+  },
+  {
+   "direction": "GL -> PH",
+   "model": "CNN",
+   "r2": -14.101,
+   "vert": -38.754,
+   "ml": -15.235,
+   "ap": -7.893,
+   "px": -2.698,
+   "pz": -5.924
+  },
+  {
+   "direction": "PH -> GL",
+   "model": "CNN",
+   "r2": -140.237,
+   "vert": -128.731,
+   "ml": -187.07,
+   "ap": -127.066,
+   "px": -201.722,
+   "pz": -56.595
+  }
+ ],
+ "pooled": [
+  {
+   "model": "ICF",
+   "dataset": "GL",
+   "single": 0.792,
+   "pooled": 0.784,
+   "delta": -0.008,
+   "p": 0.438
+  },
+  {
+   "model": "ICF",
+   "dataset": "PH",
+   "single": 0.719,
+   "pooled": 0.715,
+   "delta": -0.004,
+   "p": 0.844
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "GL",
+   "single": 0.842,
+   "pooled": 0.841,
+   "delta": -0.001,
+   "p": 1.0
+  },
+  {
+   "model": "CNN-LSTM",
+   "dataset": "PH",
+   "single": 0.728,
+   "pooled": 0.718,
+   "delta": -0.01,
+   "p": 0.312
+  },
+  {
+   "model": "CNN",
+   "dataset": "GL",
+   "single": 0.757,
+   "pooled": 0.758,
+   "delta": 0.001,
+   "p": 1.0
+  },
+  {
+   "model": "CNN",
+   "dataset": "PH",
+   "single": 0.647,
+   "pooled": 0.675,
+   "delta": 0.028,
+   "p": 0.438
+  }
+ ],
+ "units": [
+  {
+   "dataset": "GL",
+   "protocol": "LOSO",
+   "model": "CNN-LSTM",
+   "vert_pbw": 9.9,
+   "peak_pbw": 14.8,
+   "cop_cm": 7.4
+  },
+  {
+   "dataset": "GL",
+   "protocol": "LOSO",
+   "model": "CNN",
+   "vert_pbw": 10.9,
+   "peak_pbw": 14.4,
+   "cop_cm": 7.8
+  },
+  {
+   "dataset": "GL",
+   "protocol": "LOSO",
+   "model": "ICF (grid)",
+   "vert_pbw": 11.7,
+   "peak_pbw": 17.6,
+   "cop_cm": 8.0
+  },
+  {
+   "dataset": "GL",
+   "protocol": "LOSO",
+   "model": "ICF (search)",
+   "vert_pbw": 13.1,
+   "peak_pbw": 19.6,
+   "cop_cm": 8.5
+  },
+  {
+   "dataset": "GL",
+   "protocol": "trial split",
+   "model": "CNN-LSTM",
+   "vert_pbw": 8.0,
+   "peak_pbw": 8.7,
+   "cop_cm": 7.2
+  },
+  {
+   "dataset": "GL",
+   "protocol": "trial split",
+   "model": "CNN",
+   "vert_pbw": 9.9,
+   "peak_pbw": 11.9,
+   "cop_cm": 7.6
+  },
+  {
+   "dataset": "GL",
+   "protocol": "trial split",
+   "model": "ICF (grid)",
+   "vert_pbw": 10.5,
+   "peak_pbw": 13.4,
+   "cop_cm": 8.3
+  },
+  {
+   "dataset": "GL",
+   "protocol": "trial split",
+   "model": "ICF (search)",
+   "vert_pbw": 10.7,
+   "peak_pbw": 13.5,
+   "cop_cm": 7.8
+  },
+  {
+   "dataset": "PH",
+   "protocol": "LOSO",
+   "model": "CNN-LSTM",
+   "vert_pbw": 10.8,
+   "peak_pbw": 10.9,
+   "cop_cm": 6.0
+  },
+  {
+   "dataset": "PH",
+   "protocol": "LOSO",
+   "model": "CNN",
+   "vert_pbw": 11.4,
+   "peak_pbw": 11.0,
+   "cop_cm": 7.4
+  },
+  {
+   "dataset": "PH",
+   "protocol": "LOSO",
+   "model": "ICF (grid)",
+   "vert_pbw": 11.0,
+   "peak_pbw": 10.6,
+   "cop_cm": 5.2
+  },
+  {
+   "dataset": "PH",
+   "protocol": "LOSO",
+   "model": "ICF (search)",
+   "vert_pbw": 10.7,
+   "peak_pbw": 10.4,
+   "cop_cm": 5.1
+  },
+  {
+   "dataset": "PH",
+   "protocol": "trial split",
+   "model": "CNN-LSTM",
+   "vert_pbw": 7.7,
+   "peak_pbw": 9.3,
+   "cop_cm": 3.5
+  },
+  {
+   "dataset": "PH",
+   "protocol": "trial split",
+   "model": "CNN",
+   "vert_pbw": 7.8,
+   "peak_pbw": 8.5,
+   "cop_cm": 4.3
+  },
+  {
+   "dataset": "PH",
+   "protocol": "trial split",
+   "model": "ICF (grid)",
+   "vert_pbw": 8.0,
+   "peak_pbw": 9.2,
+   "cop_cm": 3.7
+  },
+  {
+   "dataset": "PH",
+   "protocol": "trial split",
+   "model": "ICF (search)",
+   "vert_pbw": 7.6,
+   "peak_pbw": 8.6,
+   "cop_cm": 3.4
+  }
+ ]
+}
