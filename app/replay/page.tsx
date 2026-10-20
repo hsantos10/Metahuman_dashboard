@@ -61,9 +61,12 @@ export default function ReplayPage() {
   useEffect(() => { C.coRotated.current = targets === "co"; }, [targets, C]);
 
   // link parameters, e.g. /replay/?trial=s003_20220523_jumpingjack_2&f=277&cam=side&cmp=0&play=0&embed=1
-  // (trial, frame, camera, view=lab|model, targets=co|plate, pred=<model key>, cmp=0|1, play=0|1, heading=0, embed=1 = scene only)
+  // (trial, frame, camera, view=lab|model, targets=co|plate, pred=<model key>, cmp=0|1, play=0|1, heading=0, markers=0,
+  //  bg=light, embed=1 = scene only)
   const [embed, setEmbed] = useState(false);
   const [showHeading, setShowHeading] = useState(true);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [showMarkers, setShowMarkers] = useState(true);
   const [paramsReady, setParamsReady] = useState(false);
   const startFrame = useRef<number | null>(null);
   useEffect(() => {
@@ -78,6 +81,8 @@ export default function ReplayPage() {
     if (q.get("play") === "0") setPlaying(false);
     if (q.get("embed") === "1") setEmbed(true);
     if (q.get("heading") === "0") setShowHeading(false);
+    if (q.get("bg") === "light") setTheme("light");
+    if (q.get("markers") === "0") setShowMarkers(false);
     setParamsReady(true);
   }, []);
 
@@ -129,8 +134,8 @@ export default function ReplayPage() {
 
   if (embed) {   // scene only, full window (for figures and embedding)
     return (
-      <div className="fixed inset-0 z-[100] bg-[#09090b]">
-        {data && <ForceReplay data={data} predKey={predKey} compareKey={compareKey} ctl={C} cameraPreset={camera} showHeading={showHeading} />}
+      <div className={`fixed inset-0 z-[100] ${theme === "light" ? "bg-white" : "bg-[#09090b]"}`}>
+        {data && <ForceReplay data={data} predKey={predKey} compareKey={compareKey} ctl={C} cameraPreset={camera} showHeading={showHeading} theme={theme} showMarkers={showMarkers} />}
       </div>
     );
   }

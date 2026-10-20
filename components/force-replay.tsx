@@ -11,8 +11,9 @@
  */
 import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Grid, Html } from "@react-three/drei";
+import { OrbitControls, Grid, Html, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
+import { buildMannequin } from "./mannequin";
 
 export type Vec3 = [number, number, number];
 export interface PlateSeries { F: Vec3[]; cop: [number, number][]; loaded?: boolean[] }
@@ -34,30 +35,17 @@ export interface ReplayControls {
 }
 
 export const COLORS = { truth: "#e4e4e7", loso: "#f59e0b", trial: "#a78bfa", bone: "#71717a", joint: "#a1a1aa" };
+export type Theme = "dark" | "light";
+const THEME = {
+  dark: { bg: "#09090b", truth: "#ececef", loso: "#f59e0b", trial: "#a78bfa", body: "#c7ccd3", marker: "#22d3ee", cell: "#1f1f23", section: "#34343a", shadow: 0.55 },
+  light: { bg: "#ffffff", truth: "#27272a", loso: "#e8590c", trial: "#7c3aed", body: "#b4bcc6", marker: "#0e7490", cell: "#ececee", section: "#d9d9de", shadow: 0.35 },
+};
 const BW_TO_M = 0.9;      // 1 body weight drawn as 0.9 m
 
-const EDGES: [string, string][] = [
-  ["HEAD", "C7"], ["C7", "LSHO"], ["C7", "RSHO"], ["LSHO", "RSHO"], ["STRN", "LSHO"], ["STRN", "RSHO"],
-  ["LSHO", "LELBL"], ["LELBL", "LWRL"], ["RSHO", "RELBL"], ["RELBL", "RWRL"],
-  ["LASI", "RASI"], ["LPSI", "RPSI"], ["LASI", "LPSI"], ["RASI", "RPSI"], ["LSHO", "LASI"], ["RSHO", "RASI"],
-  ["C7", "PELV"],
-  ["LASI", "LKNE"], ["LKNE", "LANKL"], ["LANKL", "LHEE"], ["LHEE", "LTOE"], ["LANKL", "LTOE"],
-  ["RASI", "RKNE"], ["RKNE", "RANKL"], ["RANKL", "RHEE"], ["RHEE", "RTOE"], ["RANKL", "RTOE"],
-];
 
 /* ---------- geometry helpers ---------- */
 const UP = new THREE.Vector3(0, 1, 0);
 const tmpA = new THREE.Vector3(), tmpB = new THREE.Vector3(), tmpD = new THREE.Vector3(), tmpQ = new THREE.Quaternion();
-
-function placeCylinder(mesh: THREE.Mesh, a: THREE.Vector3, b: THREE.Vector3) {
-  tmpD.subVectors(b, a);
-  const len = tmpD.length();
-  mesh.visible = len > 1e-4;
-  if (!mesh.visible) return;
-  mesh.position.copy(a).addScaledVector(tmpD, 0.5);
-  mesh.quaternion.copy(tmpQ.setFromUnitVectors(UP, tmpD.normalize()));
-  mesh.scale.set(1, len, 1);
-}
 
 /** arrow = shaft cylinder (unit height) + cone tip; origin at the CoP, vector in metres */
 function placeArrow(g: THREE.Group, origin: THREE.Vector3, v: THREE.Vector3) {
@@ -75,23 +63,26 @@ function placeArrow(g: THREE.Group, origin: THREE.Vector3, v: THREE.Vector3) {
 }
 
 function Arrow({ color, opacity = 1, radius = 0.014, refCb }: { color: string; opacity?: number; radius?: number; refCb: (g: THREE.Group | null) => void }) {
-  const transparent = opacity < 1;
   return (
     <group ref={refCb} visible={false}>
-      <mesh>
-        <cylinderGeometry args={[radius, radius, 1, 12]} />
-        <meshStandardMaterial color={color} transparent={transparent} opacity={opacity} roughness={0.5} />
+      {/* drawn on top of the body (no depth test), as force vectors usually are in biomechanics figures */}
+      <mesh renderOrder={10}>
+        <cylinderGeometry args={[radius, radius, 1, 16]} />
+        <meshStandardMaterial color={color} transparent opacity={opacity} depthTest={false} roughness={0.5} />
       </mesh>
-      <mesh>
-        <coneGeometry args={[radius * 2.6, 0.08, 16]} />
-        <meshStandardMaterial color={color} transparent={transparent} opacity={opacity} roughness={0.5} />
+      <mesh renderOrder={10}>
+        <coneGeometry args={[radius * 2.5, 0.08, 20]} />
+        <meshStandardMaterial color={color} transparent opacity={opacity} depthTest={false} roughness={0.5} />
       </mesh>
     </group>
   );
 }
 
 /* ---------- scene ---------- */
-function Scene({ data, predKey, compareKey, ctl, showHeading = true }: { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; showHeading?: boolean }) {
+function Scene({ data, predKey, compareKey, ctl, showHeading = true, theme = "dark", showMarkers = true }:
+  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; showHeading?: boolean; theme?: Theme; showMarkers?: boolean }) {
+  const TH = THEME[theme];
+  const mann = useMemo(() => buildMannequin(TH.body), [TH.body]);
   const idx = useMemo(() => Object.fromEntries(data.markers.map((m, i) => [m, i])), [data]);
   const theta = (data.headingDeg * Math.PI) / 180;
 
@@ -111,19 +102,18 @@ function Scene({ data, predKey, compareKey, ctl, showHeading = true }: { data: T
   }, [pelvis]);
 
   const jointRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const boneRefs = useRef<(THREE.Mesh | null)[]>([]);
   const arrows = useRef<Record<string, THREE.Group | null>>({});
   const copRefs = useRef<Record<string, THREE.Mesh | null>>({});
   const trails = useMemo(() => {
     const out: Record<string, THREE.Line> = {};
-    for (const [key, color] of [["truth", COLORS.truth], ["pred", COLORS.loso], ["cmp", COLORS.trial]] as const)
+    for (const [key, color] of [["truth", TH.truth], ["pred", TH.loso], ["cmp", TH.trial]] as const)
       for (const p of ["p1", "p2"]) {
         const geo = new THREE.BufferGeometry();
         geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(30 * 3), 3));
         out[`${key}-${p}`] = new THREE.Line(geo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.45 }));
       }
     return out;
-  }, []);
+  }, [TH]);
   const fwdRef = useRef<THREE.Group | null>(null);
   const tView = useRef(0);
   const pts = useMemo(() => data.markers.map(() => new THREE.Vector3()), [data]);
@@ -161,11 +151,7 @@ function Scene({ data, predKey, compareKey, ctl, showHeading = true }: { data: T
       if (j) j.position.copy(pts[i]);
     }
     xf(pelvisV, pelX, pl0[1] + (pl1[1] - pl0[1]) * w, pelZ);
-    const get = (m: string) => (m === "PELV" ? pelvisV : pts[idx[m]]);
-    EDGES.forEach(([a, b], k) => {
-      const mesh = boneRefs.current[k];
-      if (mesh && idx[a === "PELV" ? "LASI" : a] !== undefined && idx[b === "PELV" ? "LASI" : b] !== undefined) placeCylinder(mesh, get(a), get(b));
-    });
+    mann.update((m: string) => (idx[m] !== undefined ? pts[idx[m]] : undefined));
     if (fwdRef.current) {   // the trial's heading (model +Z, display -Z after the full rotation), on the floor under the pelvis
       fwdRef.current.position.set(pelvisV.x, 0.003, pelvisV.z);
       fwdRef.current.rotation.set(0, Math.PI - (t - 1) * theta, 0);
@@ -209,25 +195,22 @@ function Scene({ data, predKey, compareKey, ctl, showHeading = true }: { data: T
   });
 
   const arrowSpecs: [string, string, number, number][] = [
-    ["truth", COLORS.truth, 1, 0.016], ["pred", predKey.startsWith("trial") ? COLORS.trial : COLORS.loso, 0.85, 0.013],
-    ["cmp", COLORS.trial, 0.75, 0.011],
+    ["truth", TH.truth, 1, 0.019], ["pred", predKey.startsWith("trial") ? TH.trial : TH.loso, 0.92, 0.016],
+    ["cmp", TH.trial, 0.8, 0.013],
   ];
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[3, 5, 2]} intensity={1.1} />
+      <hemisphereLight args={["#ffffff", theme === "light" ? "#b8b8c0" : "#2a2a30", theme === "light" ? 0.9 : 0.75]} />
+      <directionalLight position={[2.5, 4.5, 2]} intensity={theme === "light" ? 1.6 : 1.9} />
+      <directionalLight position={[-3, 2.5, -2]} intensity={0.45} />
       <Grid args={[8, 8]} cellSize={0.25} cellThickness={0.5} sectionSize={1} sectionThickness={1}
-            cellColor="#27272a" sectionColor="#3f3f46" fadeDistance={9} infiniteGrid />
+            cellColor={TH.cell} sectionColor={TH.section} fadeDistance={8} infiniteGrid />
+      <ContactShadows position={[0, 0.001, 0]} scale={6} blur={2.4} far={2.2} opacity={TH.shadow} resolution={1024} />
+      <primitive object={mann.group} />
       {data.markers.map((m, i) => (
-        <mesh key={m} ref={(el) => { jointRefs.current[i] = el; }}>
-          <sphereGeometry args={[m === "HEAD" ? 0.07 : 0.017, 14, 14]} />
-          <meshStandardMaterial color={data.displayOnly.includes(m) ? "#52525b" : COLORS.joint} roughness={0.6} />
-        </mesh>
-      ))}
-      {EDGES.map(([a, b], k) => (
-        <mesh key={`${a}-${b}`} ref={(el) => { boneRefs.current[k] = el; }}>
-          <cylinderGeometry args={[0.012, 0.012, 1, 8]} />
-          <meshStandardMaterial color={COLORS.bone} roughness={0.7} />
+        <mesh key={m} ref={(el) => { jointRefs.current[i] = el; }} visible={showMarkers && !data.displayOnly.includes(m)}>
+          <sphereGeometry args={[0.012, 12, 12]} />
+          <meshStandardMaterial color={TH.marker} emissive={TH.marker} emissiveIntensity={0.35} roughness={0.4} />
         </mesh>
       ))}
       {arrowSpecs.flatMap(([key, color, op, r]) => (["p1", "p2"] as const).map((p) => (
@@ -235,7 +218,7 @@ function Scene({ data, predKey, compareKey, ctl, showHeading = true }: { data: T
           <Arrow color={color} opacity={op} radius={r} refCb={(g) => { arrows.current[`${key}-${p}`] = g; }} />
           <mesh ref={(el) => { copRefs.current[`${key}-${p}`] = el; }} rotation={[-Math.PI / 2, 0, 0]}>
             <circleGeometry args={[key === "truth" ? 0.03 : 0.022, 20]} />
-            <meshBasicMaterial color={color} transparent opacity={key === "truth" ? 0.9 : 0.7} />
+            <meshBasicMaterial color={color} transparent opacity={key === "truth" ? 0.85 : 0.7} />
           </mesh>
           <primitive object={trails[`${key}-${p}`]} />
         </group>
@@ -266,12 +249,12 @@ function CameraPreset({ preset }: { preset: string }) {
   return null;
 }
 
-export default function ForceReplay({ data, predKey, compareKey, ctl, cameraPreset, showHeading = true }:
-  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; cameraPreset: string; showHeading?: boolean }) {
+export default function ForceReplay({ data, predKey, compareKey, ctl, cameraPreset, showHeading = true, theme = "dark", showMarkers = true }:
+  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; cameraPreset: string; showHeading?: boolean; theme?: Theme; showMarkers?: boolean }) {
   return (
-    <Canvas camera={{ position: [1.9, 1.5, 1.9], fov: 45 }} dpr={[1, 2]} style={{ background: "#09090b" }}>
+    <Canvas camera={{ position: [1.9, 1.5, 1.9], fov: 45 }} dpr={[1, 2]} style={{ background: THEME[theme].bg }}>
       <CameraPreset preset={cameraPreset} />
-      <Scene data={data} predKey={predKey} compareKey={compareKey} ctl={ctl} showHeading={showHeading} />
+      <Scene data={data} predKey={predKey} compareKey={compareKey} ctl={ctl} showHeading={showHeading} theme={theme} showMarkers={showMarkers} />
       <OrbitControls target={[0, 0.8, 0]} enableDamping makeDefault />
     </Canvas>
   );
