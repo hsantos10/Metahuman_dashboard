@@ -81,7 +81,7 @@ function Arrow({ color, opacity = 1, radius = 0.014, refCb }: { color: string; o
 }
 
 /* ---------- scene ---------- */
-function Scene({ data, predKey, compareKey, ctl, showHeading = true, theme = "dark", showMarkers = true, body = "block" }:
+function Scene({ data, predKey, compareKey, ctl, showHeading = true, theme = "dark", showMarkers = true, body = "capsule" }:
   { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; showHeading?: boolean; theme?: Theme; showMarkers?: boolean; body?: BodyStyle }) {
   const TH = THEME[theme];
   const mann = useMemo(() => buildBody(body, theme), [body, theme]);
@@ -252,7 +252,7 @@ function CameraPreset({ preset }: { preset: string }) {
   return null;
 }
 
-export default function ForceReplay({ data, predKey, compareKey, ctl, cameraPreset, showHeading = true, theme = "dark", showMarkers = true, body = "block" }:
+export default function ForceReplay({ data, predKey, compareKey, ctl, cameraPreset, showHeading = true, theme = "dark", showMarkers = true, body = "capsule" }:
   { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; cameraPreset: string; showHeading?: boolean; theme?: Theme; showMarkers?: boolean; body?: BodyStyle }) {
   return (
     <Canvas camera={{ position: [1.9, 1.5, 1.9], fov: 45 }} dpr={[1, 2]} style={{ background: THEME[theme].bg }}>

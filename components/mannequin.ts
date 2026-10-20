@@ -18,8 +18,8 @@ import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeom
 
 export type BodyStyle = "block" | "capsule" | "segments" | "stick";
 export const BODY_STYLES: [BodyStyle, string][] = [
-  ["block", "Mannequin"], ["capsule", "Capsules"], ["segments", "Segments"], ["stick", "Stick figure"],
-];
+  ["capsule", "Capsules"], ["block", "Mannequin"], ["segments", "Segments"], ["stick", "Stick figure"],
+];   // capsule is the default
 type Get = (name: string) => THREE.Vector3 | undefined;
 
 const Y = new THREE.Vector3(0, 1, 0);

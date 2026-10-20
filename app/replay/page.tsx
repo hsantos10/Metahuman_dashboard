@@ -66,7 +66,7 @@ function Replay() {
   const [speed, setSpeed] = useState(1);
   const [channel, setChannel] = useState<Channel>("vert");
   const [uiFrame, setUiFrame] = useState(0);
-  const [body, setBody] = useState<BodyStyle>(qBody && BODY_STYLES.some(([k]) => k === qBody) ? (qBody as BodyStyle) : "block");
+  const [body, setBody] = useState<BodyStyle>(qBody && BODY_STYLES.some(([k]) => k === qBody) ? (qBody as BodyStyle) : "capsule");
   const embed = q.get("embed") === "1", showHeading = q.get("heading") !== "0", showMarkers = q.get("markers") !== "0";
   const theme: "dark" | "light" = q.get("bg") === "light" ? "light" : "dark";
   const startFrame = useRef<number | null>(q.get("f") ? Number(q.get("f")) : null);
