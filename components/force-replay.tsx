@@ -91,7 +91,7 @@ function Arrow({ color, opacity = 1, radius = 0.014, refCb }: { color: string; o
 }
 
 /* ---------- scene ---------- */
-function Scene({ data, predKey, compareKey, ctl }: { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls }) {
+function Scene({ data, predKey, compareKey, ctl, showHeading = true }: { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; showHeading?: boolean }) {
   const idx = useMemo(() => Object.fromEntries(data.markers.map((m, i) => [m, i])), [data]);
   const theta = (data.headingDeg * Math.PI) / 180;
 
@@ -240,14 +240,16 @@ function Scene({ data, predKey, compareKey, ctl }: { data: TrialData; predKey: s
           <primitive object={trails[`${key}-${p}`]} />
         </group>
       )))}
-      <group ref={fwdRef}>
+      <group ref={fwdRef} visible={showHeading}>
         <mesh position={[0, 0, 0.25]} rotation={[Math.PI / 2, 0, 0]}>
           <coneGeometry args={[0.05, 0.14, 3]} />
           <meshBasicMaterial color="#22d3ee" transparent opacity={0.6} />
         </mesh>
-        <Html position={[0, 0.02, 0.42]} center style={{ pointerEvents: "none" }}>
-          <span style={{ color: "#67e8f9", fontSize: 10, whiteSpace: "nowrap" }}>heading</span>
-        </Html>
+        {showHeading && (
+          <Html position={[0, 0.02, 0.42]} center style={{ pointerEvents: "none" }}>
+            <span style={{ color: "#67e8f9", fontSize: 10, whiteSpace: "nowrap" }}>heading</span>
+          </Html>
+        )}
       </group>
     </>
   );
@@ -264,12 +266,12 @@ function CameraPreset({ preset }: { preset: string }) {
   return null;
 }
 
-export default function ForceReplay({ data, predKey, compareKey, ctl, cameraPreset }:
-  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; cameraPreset: string }) {
+export default function ForceReplay({ data, predKey, compareKey, ctl, cameraPreset, showHeading = true }:
+  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; cameraPreset: string; showHeading?: boolean }) {
   return (
     <Canvas camera={{ position: [1.9, 1.5, 1.9], fov: 45 }} dpr={[1, 2]} style={{ background: "#09090b" }}>
       <CameraPreset preset={cameraPreset} />
-      <Scene data={data} predKey={predKey} compareKey={compareKey} ctl={ctl} />
+      <Scene data={data} predKey={predKey} compareKey={compareKey} ctl={ctl} showHeading={showHeading} />
       <OrbitControls target={[0, 0.8, 0]} enableDamping makeDefault />
     </Canvas>
   );

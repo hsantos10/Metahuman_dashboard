@@ -60,13 +60,39 @@ export default function ReplayPage() {
   useEffect(() => { C.view.current = view === "model" ? 1 : 0; }, [view, C]);
   useEffect(() => { C.coRotated.current = targets === "co"; }, [targets, C]);
 
+  // link parameters, e.g. /replay/?trial=s003_20220523_jumpingjack_2&f=277&cam=side&cmp=0&play=0&embed=1
+  // (trial, frame, camera, view=lab|model, targets=co|plate, pred=<model key>, cmp=0|1, play=0|1, heading=0, embed=1 = scene only)
+  const [embed, setEmbed] = useState(false);
+  const [showHeading, setShowHeading] = useState(true);
+  const [paramsReady, setParamsReady] = useState(false);
+  const startFrame = useRef<number | null>(null);
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("trial")) setTrialId(q.get("trial") as string);
+    if (q.get("f")) startFrame.current = Number(q.get("f"));
+    if (q.get("cam")) setCamera(q.get("cam") as string);
+    if (q.get("view") === "model") setView("model");
+    if (q.get("targets") === "plate") setTargets("plate");
+    if (q.get("pred")) setPredKey(q.get("pred") as string);
+    if (q.get("cmp") === "0") setCompare(false);
+    if (q.get("play") === "0") setPlaying(false);
+    if (q.get("embed") === "1") setEmbed(true);
+    if (q.get("heading") === "0") setShowHeading(false);
+    setParamsReady(true);
+  }, []);
+
   useEffect(() => {
     fetch("/inference/index.json").then((r) => r.json()).then((j) => setIndex(j.trials)).catch(() => setIndex([]));
   }, []);
   useEffect(() => {
+    if (!paramsReady) return;
     setData(null);
-    fetch(`/inference/${trialId}.json`).then((r) => r.json()).then((d: TrialData) => { C.frame.current = 0; setData(d); });
-  }, [trialId, C]);
+    fetch(`/inference/${trialId}.json`).then((r) => r.json()).then((d: TrialData) => {
+      C.frame.current = startFrame.current !== null ? Math.min(startFrame.current, d.n - 1) : 0;
+      startFrame.current = null;
+      setData(d);
+    });
+  }, [trialId, C, paramsReady]);
   useEffect(() => {   // poll the animation clock for the slider, chart playhead and readouts
     const h = setInterval(() => setUiFrame(Math.floor(C.frame.current)), 100);
     return () => clearInterval(h);
@@ -100,6 +126,14 @@ export default function ReplayPage() {
     : targets === "co"
       ? "The model's view: the pipeline subtracts the pelvis and rotates every trial so the subject faces the same way. The force targets are rotated with it (co-rotated), so a forward push always points forward in the body's frame."
       : "Plate-frame targets (the old pipeline): the body is rotated but the force is not, so the horizontal force the model must predict points in a direction its inputs cannot see. On GroundLink this cost 0.42–0.57 of anteroposterior R² for every model.";
+
+  if (embed) {   // scene only, full window (for figures and embedding)
+    return (
+      <div className="fixed inset-0 z-[100] bg-[#09090b]">
+        {data && <ForceReplay data={data} predKey={predKey} compareKey={compareKey} ctl={C} cameraPreset={camera} showHeading={showHeading} />}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5 max-w-7xl">
