@@ -1,13 +1,15 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip } from "recharts";
 import type { TrialData, ReplayControls, Vec3 } from "@/components/force-replay";
 import { COLORS } from "@/components/force-replay";
+import { BODY_STYLES, type BodyStyle } from "@/components/mannequin";
 
 const ForceReplay = dynamic(() => import("@/components/force-replay"), { ssr: false });
 
@@ -37,69 +39,58 @@ function Seg<T extends string>({ value, options, onChange }: { value: T; options
 }
 
 export default function ReplayPage() {
+  // useSearchParams needs a Suspense boundary in a static export; the page then renders on the client with its link
+  // parameters already known, so they can seed the initial state
+  return (
+    <Suspense fallback={null}>
+      <Replay />
+    </Suspense>
+  );
+}
+
+function Replay() {
+  // link parameters, e.g. /replay/?trial=s003_20220523_jumpingjack_2&f=277&cam=side&cmp=0&play=0&embed=1
+  // (trial, f = frame, cam, view=lab|model, targets=co|plate, pred=<model key>, cmp=0|1, play=0|1, heading=0, markers=0,
+  //  bg=light, body=block|capsule|segments|stick, embed=1 = scene only)
+  const q = useSearchParams();
+  const qBody = q.get("body");
   const [index, setIndex] = useState<IndexEntry[]>([]);
-  const [trialId, setTrialId] = useState("s004_20220524_dog_3");
-  const [data, setData] = useState<TrialData | null>(null);
-  const [predKey, setPredKey] = useState("loso:CNN-LSTM");
-  const [compare, setCompare] = useState(true);
-  const [view, setView] = useState<"lab" | "model">("lab");
-  const [targets, setTargets] = useState<"co" | "plate">("co");
-  const [camera, setCamera] = useState("iso");
-  const [playing, setPlaying] = useState(true);
+  const [trialId, setTrialId] = useState(q.get("trial") ?? "s004_20220524_dog_3");
+  const [loaded, setLoaded] = useState<TrialData | null>(null);
+  const [predKey, setPredKey] = useState(q.get("pred") ?? "loso:CNN-LSTM");
+  const [compare, setCompare] = useState(q.get("cmp") !== "0");
+  const [view, setView] = useState<"lab" | "model">(q.get("view") === "model" ? "model" : "lab");
+  const [targets, setTargets] = useState<"co" | "plate">(q.get("targets") === "plate" ? "plate" : "co");
+  const [camera, setCamera] = useState(q.get("cam") ?? "iso");
+  const [playing, setPlaying] = useState(q.get("play") !== "0");
   const [speed, setSpeed] = useState(1);
   const [channel, setChannel] = useState<Channel>("vert");
   const [uiFrame, setUiFrame] = useState(0);
+  const [body, setBody] = useState<BodyStyle>(qBody && BODY_STYLES.some(([k]) => k === qBody) ? (qBody as BodyStyle) : "block");
+  const embed = q.get("embed") === "1", showHeading = q.get("heading") !== "0", showMarkers = q.get("markers") !== "0";
+  const theme: "dark" | "light" = q.get("bg") === "light" ? "light" : "dark";
+  const startFrame = useRef<number | null>(q.get("f") ? Number(q.get("f")) : null);
+  const data = loaded && loaded.id === trialId ? loaded : null;   // null while another trial loads
 
-  const ctl: ReplayControls = {
-    frame: useRef(0), playing: useRef(true), speed: useRef(1), view: useRef(0), coRotated: useRef(true),
-  };
-  const ctlRef = useRef(ctl);
-  const C = ctlRef.current;
-  useEffect(() => { C.playing.current = playing; }, [playing, C]);
-  useEffect(() => { C.speed.current = speed; }, [speed, C]);
-  useEffect(() => { C.view.current = view === "model" ? 1 : 0; }, [view, C]);
-  useEffect(() => { C.coRotated.current = targets === "co"; }, [targets, C]);
-
-  // link parameters, e.g. /replay/?trial=s003_20220523_jumpingjack_2&f=277&cam=side&cmp=0&play=0&embed=1
-  // (trial, frame, camera, view=lab|model, targets=co|plate, pred=<model key>, cmp=0|1, play=0|1, heading=0, markers=0,
-  //  bg=light, embed=1 = scene only)
-  const [embed, setEmbed] = useState(false);
-  const [showHeading, setShowHeading] = useState(true);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [showMarkers, setShowMarkers] = useState(true);
-  const [paramsReady, setParamsReady] = useState(false);
-  const startFrame = useRef<number | null>(null);
-  useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    if (q.get("trial")) setTrialId(q.get("trial") as string);
-    if (q.get("f")) startFrame.current = Number(q.get("f"));
-    if (q.get("cam")) setCamera(q.get("cam") as string);
-    if (q.get("view") === "model") setView("model");
-    if (q.get("targets") === "plate") setTargets("plate");
-    if (q.get("pred")) setPredKey(q.get("pred") as string);
-    if (q.get("cmp") === "0") setCompare(false);
-    if (q.get("play") === "0") setPlaying(false);
-    if (q.get("embed") === "1") setEmbed(true);
-    if (q.get("heading") === "0") setShowHeading(false);
-    if (q.get("bg") === "light") setTheme("light");
-    if (q.get("markers") === "0") setShowMarkers(false);
-    setParamsReady(true);
-  }, []);
+  // playback state shared with the 3D scene: written here in effects and handlers, read by the scene every frame
+  const C: ReplayControls = useRef({ frame: 0, playing, speed: 1, view: view === "model" ? 1 : 0, coRotated: targets === "co" });
+  useEffect(() => { C.current.playing = playing; }, [playing, C]);
+  useEffect(() => { C.current.speed = speed; }, [speed, C]);
+  useEffect(() => { C.current.view = view === "model" ? 1 : 0; }, [view, C]);
+  useEffect(() => { C.current.coRotated = targets === "co"; }, [targets, C]);
 
   useEffect(() => {
     fetch("/inference/index.json").then((r) => r.json()).then((j) => setIndex(j.trials)).catch(() => setIndex([]));
   }, []);
   useEffect(() => {
-    if (!paramsReady) return;
-    setData(null);
     fetch(`/inference/${trialId}.json`).then((r) => r.json()).then((d: TrialData) => {
-      C.frame.current = startFrame.current !== null ? Math.min(startFrame.current, d.n - 1) : 0;
+      C.current.frame = startFrame.current !== null ? Math.min(startFrame.current, d.n - 1) : 0;
       startFrame.current = null;
-      setData(d);
+      setLoaded(d);
     });
-  }, [trialId, C, paramsReady]);
+  }, [trialId, C]);
   useEffect(() => {   // poll the animation clock for the slider, chart playhead and readouts
-    const h = setInterval(() => setUiFrame(Math.floor(C.frame.current)), 100);
+    const h = setInterval(() => setUiFrame(Math.floor(C.current.frame)), 100);
     return () => clearInterval(h);
   }, [C]);
 
@@ -135,7 +126,7 @@ export default function ReplayPage() {
   if (embed) {   // scene only, full window (for figures and embedding)
     return (
       <div className={`fixed inset-0 z-[100] ${theme === "light" ? "bg-white" : "bg-[#09090b]"}`}>
-        {data && <ForceReplay data={data} predKey={predKey} compareKey={compareKey} ctl={C} cameraPreset={camera} showHeading={showHeading} theme={theme} showMarkers={showMarkers} />}
+        {data && <ForceReplay data={data} predKey={predKey} compareKey={compareKey} ctl={C} cameraPreset={camera} showHeading={showHeading} theme={theme} showMarkers={showMarkers} body={body} />}
       </div>
     );
   }
@@ -182,12 +173,13 @@ export default function ReplayPage() {
               <Seg value={view} onChange={setView} options={[["lab", "Lab view"], ["model", "Model's view"]]} />
               {view === "model" && <Seg value={targets} onChange={setTargets} options={[["co", "Co-rotated targets"], ["plate", "Plate-frame targets"]]} />}
               <Seg value={camera} onChange={setCamera} options={[["iso", "3/4"], ["side", "Side"], ["front", "Front"], ["top", "Top"]]} />
+              <Seg value={body} onChange={setBody} options={BODY_STYLES} />
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="relative h-[460px] md:h-[540px]">
-            {data && <ForceReplay data={data} predKey={predKey} compareKey={compareKey} ctl={C} cameraPreset={camera} />}
+            {data && <ForceReplay data={data} predKey={predKey} compareKey={compareKey} ctl={C} cameraPreset={camera} body={body} />}
             <div className="pointer-events-none absolute left-3 top-3 max-w-[min(24rem,calc(100%-11rem))] rounded-md bg-zinc-950/80 p-2.5 text-[11px] leading-snug text-zinc-300">
               {stepInfo}
             </div>
@@ -205,11 +197,11 @@ export default function ReplayPage() {
             <button onClick={() => setPlaying(!playing)} className="rounded-md bg-zinc-800 p-1.5 text-white hover:bg-zinc-700" aria-label={playing ? "Pause" : "Play"}>
               {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
             </button>
-            <button onClick={() => { C.frame.current = 0; }} className="rounded-md bg-zinc-800 p-1.5 text-white hover:bg-zinc-700" aria-label="Restart">
+            <button onClick={() => { C.current.frame = 0; }} className="rounded-md bg-zinc-800 p-1.5 text-white hover:bg-zinc-700" aria-label="Restart">
               <RotateCcw className="h-4 w-4" />
             </button>
             <Slider className="min-w-[160px] flex-1" min={0} max={data ? data.n - 1 : 1} step={1} value={[uiFrame]}
-              onValueChange={(v) => { C.frame.current = v[0]; setUiFrame(v[0]); }} />
+              onValueChange={(v) => { C.current.frame = v[0]; setUiFrame(v[0]); }} />
             <Seg value={String(speed)} onChange={(v) => setSpeed(Number(v))} options={[["0.25", "¼×"], ["0.5", "½×"], ["1", "1×"], ["2", "2×"]]} />
           </div>
           <div className="flex flex-wrap items-center gap-3 border-t border-zinc-800 px-4 py-3 text-xs text-zinc-400">

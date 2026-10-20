@@ -13,7 +13,7 @@ import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Grid, Html, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
-import { buildMannequin } from "./mannequin";
+import { buildBody, type BodyStyle } from "./mannequin";
 
 export type Vec3 = [number, number, number];
 export interface PlateSeries { F: Vec3[]; cop: [number, number][]; loaded?: boolean[] }
@@ -26,13 +26,15 @@ export interface TrialData {
   metrics: Record<string, { r2: number; vert_r2: number; vert_rmse_pbw: number; cop_cm: number | null }>;
 }
 
-export interface ReplayControls {
-  frame: MutableRefObject<number>;          // float frame index
-  playing: MutableRefObject<boolean>;
-  speed: MutableRefObject<number>;
-  view: MutableRefObject<number>;           // target: 0 lab, 1 model's view
-  coRotated: MutableRefObject<boolean>;     // in the model's view: co-rotated vs plate-frame force targets
+/** Playback state shared between the page (writes it in effects and handlers) and the scene (reads it per frame). */
+export interface ReplayState {
+  frame: number;            // float frame index
+  playing: boolean;
+  speed: number;
+  view: number;             // target: 0 lab, 1 model's view
+  coRotated: boolean;       // in the model's view: co-rotated vs plate-frame force targets
 }
+export type ReplayControls = MutableRefObject<ReplayState>;
 
 export const COLORS = { truth: "#e4e4e7", loso: "#f59e0b", trial: "#a78bfa", bone: "#71717a", joint: "#a1a1aa" };
 export type Theme = "dark" | "light";
@@ -79,10 +81,10 @@ function Arrow({ color, opacity = 1, radius = 0.014, refCb }: { color: string; o
 }
 
 /* ---------- scene ---------- */
-function Scene({ data, predKey, compareKey, ctl, showHeading = true, theme = "dark", showMarkers = true }:
-  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; showHeading?: boolean; theme?: Theme; showMarkers?: boolean }) {
+function Scene({ data, predKey, compareKey, ctl, showHeading = true, theme = "dark", showMarkers = true, body = "block" }:
+  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; showHeading?: boolean; theme?: Theme; showMarkers?: boolean; body?: BodyStyle }) {
   const TH = THEME[theme];
-  const mann = useMemo(() => buildMannequin(TH.body), [TH.body]);
+  const mann = useMemo(() => buildBody(body, theme), [body, theme]);
   const idx = useMemo(() => Object.fromEntries(data.markers.map((m, i) => [m, i])), [data]);
   const theta = (data.headingDeg * Math.PI) / 180;
 
@@ -122,13 +124,14 @@ function Scene({ data, predKey, compareKey, ctl, showHeading = true, theme = "da
 
   useFrame((_, dt) => {
     // advance time
-    if (ctl.playing.current) {
-      ctl.frame.current += dt * data.rate * ctl.speed.current;
-      if (ctl.frame.current >= data.n - 1) ctl.frame.current = 0;
+    const st = ctl.current;
+    if (st.playing) {
+      st.frame += dt * data.rate * st.speed;
+      if (st.frame >= data.n - 1) st.frame = 0;
     }
-    tView.current += (ctl.view.current - tView.current) * Math.min(1, dt * 3);
+    tView.current += (st.view - tView.current) * Math.min(1, dt * 3);
     const t = tView.current;
-    const fi = Math.max(0, Math.min(data.n - 1, ctl.frame.current));
+    const fi = Math.max(0, Math.min(data.n - 1, st.frame));
     const f0 = Math.floor(fi), f1 = Math.min(data.n - 1, f0 + 1), w = fi - f0;
 
     // frame transform: lab (centred on the trial-mean pelvis) -> model's view (pelvis-centred, heading-aligned)
@@ -158,7 +161,7 @@ function Scene({ data, predKey, compareKey, ctl, showHeading = true, theme = "da
     }
 
     // forces at the CoP (lab vectors; rotated with the frame only when targets are co-rotated)
-    const rotateForces = ctl.coRotated.current;
+    const rotateForces = st.coRotated;
     const series: [string, { p1: PlateSeries; p2: PlateSeries } | undefined][] = [
       ["truth", data.truth], ["pred", data.preds[predKey]], ["cmp", compareKey ? data.preds[compareKey] : undefined],
     ];
@@ -249,12 +252,12 @@ function CameraPreset({ preset }: { preset: string }) {
   return null;
 }
 
-export default function ForceReplay({ data, predKey, compareKey, ctl, cameraPreset, showHeading = true, theme = "dark", showMarkers = true }:
-  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; cameraPreset: string; showHeading?: boolean; theme?: Theme; showMarkers?: boolean }) {
+export default function ForceReplay({ data, predKey, compareKey, ctl, cameraPreset, showHeading = true, theme = "dark", showMarkers = true, body = "block" }:
+  { data: TrialData; predKey: string; compareKey: string | null; ctl: ReplayControls; cameraPreset: string; showHeading?: boolean; theme?: Theme; showMarkers?: boolean; body?: BodyStyle }) {
   return (
     <Canvas camera={{ position: [1.9, 1.5, 1.9], fov: 45 }} dpr={[1, 2]} style={{ background: THEME[theme].bg }}>
       <CameraPreset preset={cameraPreset} />
-      <Scene data={data} predKey={predKey} compareKey={compareKey} ctl={ctl} showHeading={showHeading} theme={theme} showMarkers={showMarkers} />
+      <Scene data={data} predKey={predKey} compareKey={compareKey} ctl={ctl} showHeading={showHeading} theme={theme} showMarkers={showMarkers} body={body} />
       <OrbitControls target={[0, 0.8, 0]} enableDamping makeDefault />
     </Canvas>
   );
