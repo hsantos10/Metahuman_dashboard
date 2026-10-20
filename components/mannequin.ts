@@ -30,7 +30,7 @@ export function buildMannequin(color = "#c7ccd3"): Mannequin {
 
   // limb segments: tapered, open cylinder of unit height (radius at a -> radius at b), capped by joint spheres
   const SEG: [string, string, number, number][] = [
-    ["Lhip", "Lknee", 0.072, 0.05], ["Rhip", "Rknee", 0.072, 0.05],
+    ["Lhip", "Lknee", 0.066, 0.05], ["Rhip", "Rknee", 0.066, 0.05],
     ["Lknee", "Lankle", 0.049, 0.032], ["Rknee", "Rankle", 0.049, 0.032],
     ["Lheel", "Ltoe", 0.034, 0.024], ["Rheel", "Rtoe", 0.034, 0.024],
     ["Lankle", "Lheel", 0.033, 0.031], ["Rankle", "Rheel", 0.033, 0.031],
@@ -44,7 +44,7 @@ export function buildMannequin(color = "#c7ccd3"): Mannequin {
     return { mesh, a, b };
   });
   const SPH: [string, number][] = [
-    ["Lhip", 0.072], ["Rhip", 0.072], ["Lknee", 0.05], ["Rknee", 0.05], ["Lankle", 0.033], ["Rankle", 0.033],
+    ["Lhip", 0.066], ["Rhip", 0.066], ["Lknee", 0.05], ["Rknee", 0.05], ["Lankle", 0.033], ["Rankle", 0.033],
     ["Lheel", 0.034], ["Rheel", 0.034], ["Ltoe", 0.024], ["Rtoe", 0.024],
     ["Lsho", 0.048], ["Rsho", 0.048], ["Lelb", 0.034], ["Relb", 0.034], ["Lwri", 0.026], ["Rwri", 0.026],
     ["Lhand", 0.036], ["Rhand", 0.036],
@@ -60,8 +60,8 @@ export function buildMannequin(color = "#c7ccd3"): Mannequin {
     return { mesh, radii };
   };
   // pelvis: rounded block in the pelvis axes (wider than deep, like the abdomen and chest)
-  const PEL: [number, number, number] = [0.31, 0.17, 0.19];
-  const pelvisB = new THREE.Mesh(new RoundedBoxGeometry(PEL[0], PEL[1], PEL[2], 6, 0.075), mat);
+  const PEL: [number, number, number] = [0.28, 0.15, 0.15];
+  const pelvisB = new THREE.Mesh(new RoundedBoxGeometry(PEL[0], PEL[1], PEL[2], 6, 0.065), mat);
   pelvisB.castShadow = true; group.add(pelvisB);
   // abdomen: a slimmer rounded block bridging chest and pelvis (stretched to fit each frame)
   const ABD: [number, number, number] = [0.25, 0.2, 0.155];
@@ -145,8 +145,8 @@ export function buildMannequin(color = "#c7ccd3"): Mannequin {
     latT.addScaledVector(upT, -latT.dot(upT)).normalize();
     t3.crossVectors(lat, up).normalize();
     tm.makeBasis(lat, up, t3); pelvisB.quaternion.setFromRotationMatrix(tm);
-    pelvisB.position.copy(pc).addScaledVector(up, -0.04);
-    pelvisB.scale.set(Math.min(1.3, Math.max(0.8, (asisW + 0.1) / PEL[0])), 1, 1);
+    pelvisB.position.copy(pc).addScaledVector(up, -0.035).addScaledVector(fwd, 0.012);
+    pelvisB.scale.set(Math.min(1.2, Math.max(0.8, (asisW + 0.05) / PEL[0])), 1, 1);
     // chest box: as wide as the shoulders, top just below the shoulder joints
     const shoW = J.Lsho && J.Rsho ? J.Lsho.distanceTo(J.Rsho) : CHEST[0];
     mid(tmp, J.Lsho, J.Rsho).addScaledVector(upT, -(CHEST[1] / 2 - 0.05));
