@@ -6,6 +6,7 @@
  * three ellipsoids oriented with the pelvis and shoulder axes.
  */
 import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 
 type Get = (name: string) => THREE.Vector3 | undefined;
 
@@ -58,7 +59,18 @@ export function buildMannequin(color = "#c7ccd3"): Mannequin {
     mesh.castShadow = true; group.add(mesh);
     return { mesh, radii };
   };
-  const pelvisE = ell([0.145, 0.1, 0.105]), abdomenE = ell([0.142, 0.165, 0.102]), chestE = ell([0.165, 0.175, 0.115]);
+  // pelvis: rounded block in the pelvis axes (wider than deep, like the abdomen and chest)
+  const PEL: [number, number, number] = [0.31, 0.17, 0.19];
+  const pelvisB = new THREE.Mesh(new RoundedBoxGeometry(PEL[0], PEL[1], PEL[2], 6, 0.075), mat);
+  pelvisB.castShadow = true; group.add(pelvisB);
+  // abdomen: a slimmer rounded block bridging chest and pelvis (stretched to fit each frame)
+  const ABD: [number, number, number] = [0.25, 0.2, 0.155];
+  const abdomen = new THREE.Mesh(new RoundedBoxGeometry(ABD[0], ABD[1], ABD[2], 6, 0.07), mat);
+  abdomen.castShadow = true; group.add(abdomen);
+  // chest: a rounded box (a mannequin's ribcage is flatter front-to-back and squarer at the shoulders than an ellipsoid)
+  const CHEST: [number, number, number] = [0.34, 0.3, 0.185];
+  const chest = new THREE.Mesh(new RoundedBoxGeometry(CHEST[0], CHEST[1], CHEST[2], 6, 0.075), mat);
+  chest.castShadow = true; group.add(chest);
   const headE = ell([0.083, 0.108, 0.098]);
 
   const mid = (out: THREE.Vector3, a?: THREE.Vector3, b?: THREE.Vector3) =>
@@ -131,9 +143,23 @@ export function buildMannequin(color = "#c7ccd3"): Mannequin {
     // trunk ellipsoids: pelvis in the pelvis axes; abdomen and chest in the shoulder axes
     if (LSHO && RSHO) latT.subVectors(RSHO, LSHO); else latT.copy(lat);
     latT.addScaledVector(upT, -latT.dot(upT)).normalize();
-    placeEll(pelvisE, tmp.copy(pc).addScaledVector(up, -0.045), lat, up);
-    placeEll(abdomenE, tmp.lerpVectors(pc, joint("neck"), 0.38), latT, upT);
-    placeEll(chestE, tmp.lerpVectors(pc, joint("neck"), 0.74), latT, upT);
+    t3.crossVectors(lat, up).normalize();
+    tm.makeBasis(lat, up, t3); pelvisB.quaternion.setFromRotationMatrix(tm);
+    pelvisB.position.copy(pc).addScaledVector(up, -0.04);
+    pelvisB.scale.set(Math.min(1.3, Math.max(0.8, (asisW + 0.1) / PEL[0])), 1, 1);
+    // chest box: as wide as the shoulders, top just below the shoulder joints
+    const shoW = J.Lsho && J.Rsho ? J.Lsho.distanceTo(J.Rsho) : CHEST[0];
+    mid(tmp, J.Lsho, J.Rsho).addScaledVector(upT, -(CHEST[1] / 2 - 0.05));
+    t3.crossVectors(latT, upT).normalize();
+    tm.makeBasis(latT, upT, t3); chest.quaternion.setFromRotationMatrix(tm);
+    chest.position.copy(tmp); chest.scale.set(Math.min(1.3, Math.max(0.8, (shoW + 0.06) / CHEST[0])), 1, 1);
+    // abdomen from just inside the chest's lower edge down into the pelvis
+    t1.copy(tmp).addScaledVector(upT, -CHEST[1] / 2 + 0.04);          // chest bottom (overlap 4 cm)
+    t2.copy(pc).addScaledVector(up, 0.02);                             // pelvis top
+    const abdLen = Math.max(0.05, t1.distanceTo(t2));
+    abdomen.position.addVectors(t1, t2).multiplyScalar(0.5);
+    abdomen.quaternion.copy(chest.quaternion);
+    abdomen.scale.set(1, abdLen / ABD[1], 1);
     t2.subVectors(joint("headC"), joint("neck")).normalize();
     t3.copy(latT).addScaledVector(t2, -latT.dot(t2)).normalize();
     placeEll(headE, joint("headC"), t3.clone(), t2.clone());
